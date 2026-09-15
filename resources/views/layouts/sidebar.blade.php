@@ -11,17 +11,72 @@
 
     <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
 
-        <a href="#"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800 text-white font-medium">
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800 text-white font-medium">
             <i class="fas fa-tachometer-alt w-5 text-indigo-400"></i>
             <span>Dashboard</span>
         </a>
+        <a href="{{ route('admin.userlist') }}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
+            <i class="fas fa-users w-5 text-orange-400"></i>
+            <span>Users</span>
+
+        </a>
+        <div>
+
+    <!-- Our Products -->
+    <button type="button"
+        onclick="toggleDropdown('productsDropdown', 'productsArrow')"
+        class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+
+        <div class="flex items-center gap-3">
+            <i class="fas fa-boxes-stacked w-5 text-blue-400"></i>
+            <span>Our Products</span>
+        </div>
+
+        <i id="productsArrow"
+            class="fas fa-chevron-down text-xs transition-transform duration-200">
+        </i>
+
+    </button>
+
+    <!-- Dropdown -->
+    <div id="productsDropdown" class="hidden ml-5 mt-1 space-y-1">
+
+        <!-- Add Products -->
+        <a href="#"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
+
+            <i class="fas fa-plus-circle w-4 text-green-400"></i>
+            <span>Add Products</span>
+
+        </a>
+
+        <!-- Orders -->
+        <a href="#"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
+
+            <i class="fas fa-shopping-cart w-4 text-yellow-400"></i>
+            <span>Orders</span>
+
+        </a>
+
+        <!-- Payments -->
+        <a href="#"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
+
+            <i class="fas fa-credit-card w-4 text-purple-400"></i>
+            <span>Payments</span>
+
+        </a>
+
+    </div>
+
+</div>
 
         <div>
 
-            <button type="button"
-                onclick="toggleDropdown('homeDropdown', 'homeArrow')"
+            <button type="button" onclick="toggleDropdown('homeDropdown', 'homeArrow')"
                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
                 <div class="flex items-center gap-3">
@@ -29,8 +84,7 @@
                     <span>Home Section</span>
                 </div>
 
-                <i id="homeArrow"
-                    class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+                <i id="homeArrow" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
 
             </button>
 
@@ -48,11 +102,6 @@
                     Why Choose Us
                 </a>
 
-                <a href="#"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-concierge-bell w-4"></i>
-                    Services
-                </a>
 
             </div>
 
@@ -61,8 +110,7 @@
 
         <div>
 
-            <button type="button"
-                onclick="toggleDropdown('aboutDropdown', 'aboutArrow')"
+            <button type="button" onclick="toggleDropdown('aboutDropdown', 'aboutArrow')"
                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
                 <div class="flex items-center gap-3">
@@ -70,8 +118,7 @@
                     <span>About Section</span>
                 </div>
 
-                <i id="aboutArrow"
-                    class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+                <i id="aboutArrow" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
 
             </button>
 
@@ -120,8 +167,7 @@
 
         <div>
 
-            <button type="button"
-                onclick="toggleDropdown('itDropdown', 'itArrow')"
+            <button type="button" onclick="toggleDropdown('itDropdown', 'itArrow')"
                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
                 <div class="flex items-center gap-3">
@@ -129,8 +175,7 @@
                     <span>IT Consultancy</span>
                 </div>
 
-                <i id="itArrow"
-                    class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+                <i id="itArrow" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
 
             </button>
 
@@ -139,25 +184,13 @@
                 <a href="#"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-code w-4"></i>
-                    Web Development
+                    Manage Categories
                 </a>
 
                 <a href="#"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-mobile-alt w-4"></i>
-                    App Development
-                </a>
-
-                <a href="#"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-cloud w-4"></i>
-                    Cloud Services
-                </a>
-
-                <a href="#"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-server w-4"></i>
-                    Web Hosting
+                    Manage Services
                 </a>
 
             </div>
@@ -167,8 +200,7 @@
 
         <div>
 
-            <button type="button"
-                onclick="toggleDropdown('managementDropdown', 'managementArrow')"
+            <button type="button" onclick="toggleDropdown('managementDropdown', 'managementArrow')"
                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
                 <div class="flex items-center gap-3">
@@ -176,8 +208,7 @@
                     <span>Manage Consultancy</span>
                 </div>
 
-                <i id="managementArrow"
-                    class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+                <i id="managementArrow" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
 
             </button>
 
@@ -206,21 +237,6 @@
         </div>
 
 
-        <a href="#"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
-
-            <i class="fas fa-user-tie w-5 text-orange-400"></i>
-            <span>HR Consultancy</span>
-
-        </a>
-
-        <a href="#"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
-
-            <i class="fas fa-cog w-5 text-slate-400"></i>
-            <span>Settings</span>
-
-        </a>
 
     </nav>
 
@@ -260,4 +276,3 @@
         arrow.classList.toggle('rotate-180');
     }
 </script>
-
