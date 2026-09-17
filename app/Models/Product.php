@@ -6,9 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $table = 'products';
+    protected $table = "products";
     protected $primaryKey = 'id';
-    protected  $fillable = ['image','name','highlights','cupon_code','description','price'];
+     protected $fillable = [
+        'top_highlights',
+        'title',
+        'rating',
+        'rating_text',
+        'currency_code',
+        'price',
+        'stock_price',
+        'description',
+        'package_includes',
+        'images',
+        'category',
+        "cupon_code",
+        "cupon_price"
+    ];
 
-    protected $casts = ['hightlights'=>'array'];
+    protected $casts = ['package_includes'=>"array"];
+
+    public function Managecupon(){
+        return $this->hasMany(ManageCupon::class,"product_id");
+    }
+
+    public function cart(){
+        return $this->hasMany(Cart::class,"product_id");
+    }
 }

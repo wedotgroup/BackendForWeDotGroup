@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\EnquieryMail;
 use App\Mail\HrConsultancyMail;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -178,29 +179,32 @@ class ManageApiController extends Controller
 
             $user = User::where('email', $data['email'])->first();
 
-            if(!$user){
+            if (! $user) {
                 return response()->json([
-                    "message"=>"User Not Found",
-                    "status"=>false
+                    'message' => 'User Not Found',
+                    'status' => false,
                 ]);
             }
 
             if ($user->role == 'user') {
-                if (Auth::guard('user')->attempt(['email'=> $data['email'], 'password' => $data['password']])) {
+                if (Auth::guard('user')->attempt(['email' => $data['email'], 'password' => $data['password']])) {
                     $user = Auth::guard('user')->user();
                     $token = $user->createToken('user-token')->plainTextToken;
 
                     return response()->json([
                         'message' => 'User Login Successfully',
                         'token' => $token,
+                        'user' => $user,
                         'status' => true,
                     ]);
+
                 } else {
                     return response()->json([
                         'message' => 'Authentication Failed',
                         'status' => false,
                     ]);
                 }
+
             } else {
                 return response()->json([
                     'message' => 'Your Role is Incorect',
@@ -218,4 +222,26 @@ class ManageApiController extends Controller
         }
 
     }
+
+    public function LogoutUser(Request $request)
+{
+    try {
+        Auth::guard('user')->logout();
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'message' => 'Logged Out Successfully',
+            'status' => true,
+        ], 200);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'message' => 'Something went wrong',
+            'status' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+    
 }

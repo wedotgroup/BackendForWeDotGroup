@@ -14,8 +14,15 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::post('/logout', 'adminlogged')->name('admin.logout');
     });
 
-    Route::controller(ProductController::class)->group(function(){
-        Route::get('/users','userList')->name('admin.userlist');
+    Route::controller(ProductController::class)->group(function () {
+        Route::get('/users', 'userList')->name('admin.userlist');
+        Route::get('/create', 'index')->name('admin.product.create');
+        Route::get('/products', 'listing')->name('admin.product.list');
+        Route::get('/product/edit/{id}', 'edit')->name('admin.product.edit');
+        Route::post('/product/add', 'store')->name('admin.product.store');
+        Route::put('/product/update/{id}', 'update')->name('admin.product.update');
+        Route::delete('/product/delete/{id}', 'destroy')->name('admin.product.destroy');
+        Route::get('/packing/highligh/{index}', 'packingdelete')->name('admin.highlight.delete');
     });
 
 });

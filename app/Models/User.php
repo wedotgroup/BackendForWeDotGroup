@@ -48,4 +48,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function Managecupon(){
+        return $this->hasMany(ManageCupon::class,'user_id');
+    }
+
+    public function cart(){
+        return $this->hasMany(Cart::class);
+    }
 }

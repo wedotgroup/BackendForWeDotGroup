@@ -44,7 +44,7 @@
     <div id="productsDropdown" class="hidden ml-5 mt-1 space-y-1">
 
         <!-- Add Products -->
-        <a href="#"
+        <a href="{{ route('admin.product.list') }}"
             class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
 
             <i class="fas fa-plus-circle w-4 text-green-400"></i>
