@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $table = "products";
+    protected $table = 'products';
+
     protected $primaryKey = 'id';
-     protected $fillable = [
+
+    protected $fillable = [
         'top_highlights',
         'title',
+        'slug',
         'rating',
         'rating_text',
         'currency_code',
@@ -20,17 +23,19 @@ class Product extends Model
         'package_includes',
         'images',
         'category',
-        "cupon_code",
-        "cupon_price"
+        'cupon_code',
+        'cupon_price',
     ];
 
-    protected $casts = ['package_includes'=>"array"];
+    protected $casts = ['package_includes' => 'array'];
 
-    public function Managecupon(){
-        return $this->hasMany(ManageCupon::class,"product_id");
+    public function Managecupon()
+    {
+        return $this->hasMany(ManageCupon::class, 'product_id');
     }
 
-    public function cart(){
-        return $this->hasMany(Cart::class,"product_id");
+    public function cart()
+    {
+        return $this->hasMany(Cart::class, 'product_id');
     }
 }

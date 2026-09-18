@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -40,6 +41,7 @@ class ProductController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'nullable|string',
             'top_highlights' => 'nullable|string',
             'category' => 'nullable|string|max:255',
             'currency_code' => 'required|string|max:10',
@@ -63,6 +65,7 @@ class ProductController extends Controller
 
         $createdata = Product::create([
             'title' => $request->title,
+            'slug' => Str::slug($request->title),
             'category' => $request->category,
             'currency_code' => $request->currency_code,
             'price' => $request->price,
@@ -88,6 +91,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'nullable|string',
             'top_highlights' => 'nullable|string',
             'category' => 'nullable|string|max:255',
             'currency_code' => 'required|string|max:10',
@@ -133,6 +137,7 @@ class ProductController extends Controller
 
         $updated = $product->update([
             'title' => $request->title,
+            'slug' => Str::slug($request->title),
             'category' => $request->category,
             'currency_code' => $request->currency_code,
             'price' => $request->price,

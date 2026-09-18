@@ -12,7 +12,7 @@ class ManageOurProductController extends Controller
     public function Products()
     {
         try {
-            $products = Product::select('title', 'price', 'id', 'top_highlights', 'category', 'currency_code', 'images')->get();
+            $products = Product::select('title', 'price', 'id', 'top_highlights', 'category', 'currency_code', 'images', 'slug')->get();
             if ($products) {
                 return response()->json([
                     'message' => 'Product lists here',
@@ -35,11 +35,11 @@ class ManageOurProductController extends Controller
         }
     }
 
-    public function ProductDetails($id)
+    public function ProductDetails($slug)
     {
         try {
-            $id = trim($id);
-            $products = Product::find($id);
+            $slug = trim($slug);
+            $products = Product::where('slug', $slug)->first();
             $products->package_includes = json_decode($products->package_includes);
             if ($products) {
                 return response()->json([
@@ -118,70 +118,136 @@ class ManageOurProductController extends Controller
 
     }
 
-    public function RemoveCart($user_id, $product_id)
+    public function MyCartItems(Request $request)
     {
         try {
-            $card = Cart::where('user_id', $user_id)->where('product_id', $product_id)->first();
-            if (! $card) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data Not Found',
-                ], 404);
-            }
-            $card->delete();
-            if ($card) {
-                return response()->json([
-                    'message' => 'Remove Your Add to cart items ',
-                    'status' => true,
-                    'data' => $card,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Deletion Failed',
-                    'status' => false,
-                    'data' => [],
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Something wend wrong',
-                'status' => false,
-                'error' => $e->getMessage(),
-            ]);
-        }
 
+            $user = $request->user();
+
+            if (! $user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+
+            $cart = Cart::with('product')
+                ->where('user_id', $user->id)
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Your cart items fetched successfully',
+                'data' => $cart,
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ], 500);
+        }
     }
 
-    public function MyCartItems($user_id)
+    public function updateCart(Request $request, $id)
     {
         try {
-            $card = Cart::with(['product'])->where('user_id', $user_id)->get();
-             if (! $card) {
+
+            $request->validate([
+                'quentity' => 'required|integer|min:1',
+            ]);
+
+            $user = $request->user();
+
+            $cart = Cart::where('id', $id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (! $cart) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data Not Found',
+                    'message' => 'Cart item not found',
                 ], 404);
             }
-            
-            if ($card) {
-                return response()->json([
-                    'message' => 'Your Add to cart items',
-                    'status' => true,
-                    'data' => $card,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Cart Items Not Found',
-                    'status' => false,
-                    'data' => [],
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Something wend wrong',
-                'status' => false,
-                'error' => $e->getMessage(),
+
+            $cart->update([
+                'quentity' => $request->quentity,
             ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Cart quantity updated successfully',
+                'data' => $cart,
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function removeCart(Request $request, $id)
+    {
+        try {
+
+            $user = $request->user();
+
+            $cart = Cart::where('id', $id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (! $cart) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Cart item not found',
+                ], 404);
+            }
+
+            $cart->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Cart item removed successfully',
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function clearCart(Request $request)
+    {
+        try {
+
+            $user = $request->user();
+
+            $deleted = Cart::where('user_id', $user->id)->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Cart cleared successfully',
+                'deleted_items' => $deleted,
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }

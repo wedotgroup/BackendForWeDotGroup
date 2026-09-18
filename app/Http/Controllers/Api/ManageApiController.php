@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\EnquieryMail;
 use App\Mail\HrConsultancyMail;
-use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -163,85 +162,98 @@ class ManageApiController extends Controller
     public function SingIn(Request $request)
     {
         try {
+
             $validate = Validator::make($request->all(), [
                 'email' => 'required|email|exists:users,email',
-                'password' => 'required|min:6|confirmed',
+                'password' => 'required|min:6',
             ]);
 
+            // Validation
             if ($validate->fails()) {
                 return response()->json([
-                    'message' => 'Validation error',
                     'status' => false,
+                    'message' => 'Validation error',
                     'error' => $validate->errors(),
-                ], 500);
+                ], 422);
             }
-            $data = $validate->validate();
 
+            $data = $validate->validated();
+
+            // Find user
             $user = User::where('email', $data['email'])->first();
 
             if (! $user) {
                 return response()->json([
-                    'message' => 'User Not Found',
                     'status' => false,
-                ]);
+                    'message' => 'User not found',
+                ], 404);
             }
 
-            if ($user->role == 'user') {
-                if (Auth::guard('user')->attempt(['email' => $data['email'], 'password' => $data['password']])) {
-                    $user = Auth::guard('user')->user();
-                    $token = $user->createToken('user-token')->plainTextToken;
-
-                    return response()->json([
-                        'message' => 'User Login Successfully',
-                        'token' => $token,
-                        'user' => $user,
-                        'status' => true,
-                    ]);
-
-                } else {
-                    return response()->json([
-                        'message' => 'Authentication Failed',
-                        'status' => false,
-                    ]);
-                }
-
-            } else {
+            // Check role
+            if ($user->role !== 'user') {
                 return response()->json([
-                    'message' => 'Your Role is Incorect',
                     'status' => false,
-                ]);
+                    'message' => 'Your role is incorrect',
+                ], 403);
             }
+
+            // Authentication
+            if (
+                Auth::guard('user')->attempt([
+                    'email' => $data['email'],
+                    'password' => $data['password'],
+                ])
+            ) {
+
+                $user = Auth::guard('user')->user();
+
+                // Create Sanctum token
+                $token = $user
+                    ->createToken('user-token')
+                    ->plainTextToken;
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'User Login Successfully',
+                    'token' => $token,
+                    'user' => $user,
+                ], 200);
+            }
+
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid email or password',
+            ], 401);
 
         } catch (\Exception $e) {
+
             return response()->json([
+                'status' => false,
                 'message' => 'Something went wrong',
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            ], 500);
         }
-
     }
 
     public function LogoutUser(Request $request)
-{
-    try {
-        Auth::guard('user')->logout();
-        $request->user()->currentAccessToken()->delete();
-        return response()->json([
-            'message' => 'Logged Out Successfully',
-            'status' => true,
-        ], 200);
+    {
+        try {
+            Auth::guard('user')->logout();
+            $request->user()->currentAccessToken()->delete();
 
-    } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Logged Out Successfully',
+                'status' => true,
+            ], 200);
 
-        return response()->json([
-            'message' => 'Something went wrong',
-            'status' => false,
-            'error' => $e->getMessage(),
-        ], 500);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
-
-    
 }

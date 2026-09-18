@@ -11,8 +11,24 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::post('/user/logout', [ManageApiController::class, 'LogoutUser']);
     Route::post('/addtocart/{user_id}', [ManageOurProductController::class, 'AddToCart']);
-    Route::delete('/remove/cart/{user_id}/{product_id}', [ManageOurProductController::class, 'RemoveCart']);
-    Route::get('/my/cart/items/{user_id}',[ManageOurProductController::class, 'MyCartItems']);
+    Route::put(
+        '/cart/{id}',
+        [ManageOurProductController::class, 'updateCart']
+    );
+
+    Route::delete(
+        '/cart/{id}',
+        [ManageOurProductController::class, 'removeCart']
+    );
+
+    Route::delete(
+        '/cart',
+        [ManageOurProductController::class, 'clearCart']
+    );
+    Route::get(
+        '/my/cart/items',
+        [ManageOurProductController::class, 'MyCartItems']
+    );
 });
 
 Route::post('/contact', [ManageApiController::class, 'Enquery']);
@@ -20,4 +36,4 @@ Route::post('/hr/form', [ManageApiController::class, 'HrConsulation']);
 Route::post('/singin', [ManageApiController::class, 'SingUp']);
 Route::post('/login', [ManageApiController::class, 'SingIn']);
 Route::get('/products', [ManageOurProductController::class, 'Products']);
-Route::get('/products/{id}', [ManageOurProductController::class, 'ProductDetails']);
+Route::get('/products/{slug}', [ManageOurProductController::class, 'ProductDetails']);
