@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Coupon;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ManageOurProductController extends Controller
 {
@@ -162,7 +164,8 @@ class ManageOurProductController extends Controller
 
             $user = $request->user();
 
-            $cart = Cart::where('id', $id)
+            $cart = Cart::with('product')
+                ->where('id', $id)
                 ->where('user_id', $user->id)
                 ->first();
 
@@ -173,15 +176,43 @@ class ManageOurProductController extends Controller
                 ], 404);
             }
 
+            if (! $cart->product) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Product not found',
+                ], 404);
+            }
+
+            $quantity = (int) $request->quentity;
+
+            // Product ka current unit price
+            $unitPrice = (float) $cart->product->price;
+
+            // Total price
+            $totalPrice = $unitPrice * $quantity;
+
+            // Update cart
             $cart->update([
-                'quentity' => $request->quentity,
+                'quentity' => $quantity,
+                'price' => $totalPrice,
+
             ]);
+
+            $cart->load('product');
 
             return response()->json([
                 'status' => true,
-                'message' => 'Cart quantity updated successfully',
+                'message' => 'Cart quantity and price updated successfully',
                 'data' => $cart,
             ], 200);
+
+        } catch (ValidationException $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
 
         } catch (\Exception $e) {
 
@@ -247,6 +278,130 @@ class ManageOurProductController extends Controller
                 'status' => false,
                 'message' => 'Something went wrong',
                 'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function ApplyCuopon(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'cuoponcode' => 'required|string',
+                'cart_total' => 'required|numeric|min:0',
+            ]);
+
+            $getcode = strtoupper(trim($request->cuoponcode));
+
+            $coupon = Coupon::where('code', $getcode)
+                ->where('status', 'active')
+                ->first();
+
+            if (! $coupon) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid coupon code.',
+                ], 422);
+            }
+
+            if (
+                ! empty($coupon->start_date) &&
+                now()->lt($coupon->start_date)
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This coupon is not active yet.',
+                ], 422);
+            }
+
+            if (
+                ! empty($coupon->expiry_date) &&
+                now()->gt($coupon->expiry_date)
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This coupon has expired.',
+                ], 422);
+            }
+
+            if (
+                ! empty($coupon->usage_limit) &&
+                $coupon->used_count >= $coupon->usage_limit
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Coupon usage limit has been reached.',
+                ], 422);
+            }
+
+            $cartTotal = (float) $request->cart_total;
+
+            if (
+                ! empty($coupon->minimum_order_amount) &&
+                $cartTotal < $coupon->minimum_order_amount
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Minimum order amount is '.
+                        $coupon->minimum_order_amount,
+                ], 422);
+            }
+
+            if ($coupon->type === 'percentage') {
+
+                $discount = ($cartTotal * $coupon->value) / 100;
+
+                if (
+                    ! empty($coupon->maximum_discount) &&
+                    $discount > $coupon->maximum_discount
+                ) {
+                    $discount = (float) $coupon->maximum_discount;
+                }
+
+            } else {
+
+                $discount = (float) $coupon->value;
+
+                if ($discount > $cartTotal) {
+                    $discount = $cartTotal;
+                }
+            }
+
+            $discount = round($discount, 2);
+
+            $finalTotal = round(
+                $cartTotal - $discount,
+                2
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Coupon applied successfully.',
+                'data' => [
+                    'id' => $coupon->id,
+                    'code' => $coupon->code,
+                    'type' => $coupon->type,
+                    'value' => $coupon->value,
+                    'discount' => $discount,
+                    'cart_total' => $cartTotal,
+                    'final_total' => $finalTotal,
+                ],
+            ], 200);
+
+        } catch (ValidationException $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong.',
+                'errors' => $e->getMessage(),
             ], 500);
         }
     }

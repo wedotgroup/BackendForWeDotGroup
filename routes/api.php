@@ -11,6 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::post('/user/logout', [ManageApiController::class, 'LogoutUser']);
     Route::post('/addtocart/{user_id}', [ManageOurProductController::class, 'AddToCart']);
+    route::post("/apply/cuopon",[ManageOurProductController::class,'ApplyCuopon']);
     Route::put(
         '/cart/{id}',
         [ManageOurProductController::class, 'updateCart']

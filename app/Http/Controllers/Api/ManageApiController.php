@@ -35,7 +35,7 @@ class ManageApiController extends Controller
                 ], 422);
             }
             $data = $validate->validate();
-            Mail::to('officewedotgroup@gmail.com')->send(new EnquieryMail($data));
+            Mail::to('noreply@wedotgroup.in')->send(new EnquieryMail($data));
 
             return response()->json([
                 'message' => 'Thanks for you connected with me',
@@ -89,7 +89,7 @@ class ManageApiController extends Controller
 
             $files = $request->file('supporting_files', []);
 
-            Mail::to('officewedotgroup@gmail.com')
+            Mail::to('noreply@wedotgroup.in')
                 ->send(new HrConsultancyMail($hrdata, $files));
 
             return response()->json([
@@ -220,7 +220,6 @@ class ManageApiController extends Controller
                 ], 200);
             }
 
-            
             return response()->json([
                 'status' => false,
                 'message' => 'Invalid email or password',
