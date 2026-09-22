@@ -10,7 +10,7 @@ class OrderItem extends Model
 
     protected $primaryKey = 'id';
 
-    protected $fillable = ['user_id', 'product_id', 'quentity', 'total', 'user_cupon','status'];
+    protected $fillable = ['user_id', 'product_id', 'quentity', 'total', 'user_cupon','status','quentity'];
 
     public function user()
     {
