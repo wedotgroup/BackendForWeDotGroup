@@ -216,16 +216,7 @@
 
             <!-- Client-side password error -->
 
-            <p
-                id="passwordError"
-                class="hidden text-xs text-red-500 mt-1.5 items-center gap-1"
-            >
-                <i class="fas fa-exclamation-circle"></i>
-
-                <span>
-                    Password must be at least 6 characters.
-                </span>
-            </p>
+            
 
         </div>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Reset Password</title>
@@ -17,11 +18,11 @@
             Click the button below to reset your password.
         </p>
 
-        <a href="{{ $data->link }}"
-           style="
+        <a href="{{ $data['link'] }}"
+            style="
                 display:inline-block;
                 padding:12px 24px;
-                background:#011810;
+                background:#E1C562;
                 color:#ffffff;
                 text-decoration:none;
                 border-radius:6px;
@@ -37,4 +38,5 @@
     </div>
 
 </body>
+
 </html>

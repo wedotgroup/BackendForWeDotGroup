@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
@@ -76,13 +77,14 @@ class AdminController extends Controller
             'email' => 'required|string|email|exists:users,email',
         ]);
 
-        $check = GetSingleData(User::class)->where(['email' => $request->email ,'role'=>'admin']);
+        $check = GetSingleData(User::class)->where(['email' => $request->email, 'role' => 'admin']);
+
         if (! $check) {
             return back()->with('error', 'Your eamil is incorrect');
         }
         $url = env('APP_URL');
         $data = [
-            'link' => $url.'/forgetpassword',
+            'link' => 'http://127.0.0.1:8000/viewfps',
         ];
 
         $send = Mail::to($request->email)->send(new ForgetPasswordMail($data));
@@ -92,5 +94,29 @@ class AdminController extends Controller
             return back()->with('error', 'Something went wrong please try again');
         }
 
+    }
+
+    public function viewfps()
+    {
+        return view('auth.Forgetpassword');
+    }
+
+    public function UpdatePassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email|exists:users,email',
+            'password' => 'required|string|confirmed',
+        ]);
+
+        $user = GetSingleData(User::class)->where(['email' => $request->email, 'role'=>'admin']);
+        if (! $user) {
+            return back()->with('error', 'Your Email is Incorrect');
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect('/')->with('success','Your Password Updated SuccessFul');
     }
 }
