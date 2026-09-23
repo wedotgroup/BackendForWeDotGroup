@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ForgetPasswordMail;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -42,21 +44,22 @@ class AdminController extends Controller
             return back()->with('error', 'Your role is invalid');
         }
     }
-public function dashboard()
-{
-    $users = CountData(User::class);
-    $products = CountData(Product::class);
-    $orders = CountData(OrderItem::class);
 
-    $revenue = Payment::sum('amount');
+    public function dashboard()
+    {
+        $users = CountData(User::class);
+        $products = CountData(Product::class);
+        $orders = CountData(OrderItem::class);
 
-    return view('dashboard', compact(
-        'users',
-        'products',
-        'orders',
-        'revenue'
-    ));
-}
+        $revenue = Payment::sum('amount');
+
+        return view('dashboard', compact(
+            'users',
+            'products',
+            'orders',
+            'revenue'
+        ));
+    }
 
     public function adminlogged(Request $request)
     {
@@ -64,6 +67,30 @@ public function dashboard()
         $request->session()->regenerateToken();
 
         return redirect()->route('index');
+
+    }
+
+    public function forgetpass(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email|exists:users,email',
+        ]);
+
+        $check = GetSingleData(User::class)->where(['email' => $request->email ,'role'=>'admin']);
+        if (! $check) {
+            return back()->with('error', 'Your eamil is incorrect');
+        }
+        $url = env('APP_URL');
+        $data = [
+            'link' => $url.'/forgetpassword',
+        ];
+
+        $send = Mail::to($request->email)->send(new ForgetPasswordMail($data));
+        if ($send) {
+            return back()->with('success', 'Email send please check you email inbox');
+        } else {
+            return back()->with('error', 'Something went wrong please try again');
+        }
 
     }
 }

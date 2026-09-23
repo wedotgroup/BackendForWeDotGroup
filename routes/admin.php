@@ -13,6 +13,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
     Route::controller(AdminController::class)->group(function () {
         Route::get('/dashboard', 'dashboard')->name('admin.dashboard');
         Route::post('/logout', 'adminlogged')->name('admin.logout');
+        Route::post('/forget/password','forgetpass')->name('admin.forget.password');
     });
 
     Route::controller(ProductController::class)->group(function () {
@@ -37,5 +38,6 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
     });
     Route::get('/orders',[ProductController::class, 'orders'])->name('admin.orders');
     Route::get('/payments',[ProductController::class, 'payments'])->name('admin.payments');
+    
 
 });

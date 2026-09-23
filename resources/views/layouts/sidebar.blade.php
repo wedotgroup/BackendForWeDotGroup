@@ -245,22 +245,31 @@
 
 
     </nav>
+    @php
+        $name = '';
+        $email = '';
 
+        if (Auth::guard('admin')->check()) {
+            $name = Auth::guard('admin')->user()->name ?? '';
+            $email = Auth::guard('admin')->user()->email ?? '';
+        }
+
+    @endphp
     <div class="border-t border-slate-700/70 p-4 flex items-center gap-3">
 
         <div
-            class="h-9 w-9 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold shadow">
-            WD
+            class="h-9 w-9 rounded-full bg-[#E1C562] flex items-center justify-center text-white font-semibold shadow">
+         {{ Str::upper(Str::substr($name, 0, 2)) }}
         </div>
 
         <div class="flex-1 min-w-0">
 
             <p class="text-sm font-medium text-white truncate">
-                Alex Rivera
+                {{ $name ?? '' }}
             </p>
 
             <p class="text-xs text-slate-400 truncate">
-                Super Admin
+                {{ $email ?? '' }}
             </p>
 
         </div>
