@@ -35,5 +35,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::delete('delete/cuopon/{id}', 'destroy')->name('admin.cuopon.delete');
 
     });
+    Route::get('/orders',[ProductController::class, 'orders'])->name('admin.orders');
+    Route::get('/payments',[ProductController::class, 'payments'])->name('admin.payments');
 
 });

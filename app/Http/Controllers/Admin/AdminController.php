@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrderItem;
+use App\Models\Payment;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,11 +42,21 @@ class AdminController extends Controller
             return back()->with('error', 'Your role is invalid');
         }
     }
+public function dashboard()
+{
+    $users = CountData(User::class);
+    $products = CountData(Product::class);
+    $orders = CountData(OrderItem::class);
 
-    public function dashboard()
-    {
-        return view('dashboard');
-    }
+    $revenue = Payment::sum('amount');
+
+    return view('dashboard', compact(
+        'users',
+        'products',
+        'orders',
+        'revenue'
+    ));
+}
 
     public function adminlogged(Request $request)
     {

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -185,5 +187,19 @@ class ProductController extends Controller
 
         return back()
             ->with('error', 'Product Delete Failed');
+    }
+
+    public function orders()
+    {
+        $orders = getAll(OrderItem::class);
+
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    public function payments()
+    {
+        $payments = getAll(Payment::class);
+
+        return view('admin.payments.index', compact("payments"));
     }
 }

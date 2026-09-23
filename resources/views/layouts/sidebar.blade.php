@@ -59,7 +59,7 @@
                 </a>
 
                 <!-- Orders -->
-                <a href="#"
+                <a href="{{ route('admin.orders') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
 
                     <i class="fas fa-shopping-cart w-4 text-yellow-400"></i>
@@ -68,7 +68,7 @@
                 </a>
 
                 <!-- Payments -->
-                <a href="#"
+                <a href="{{ route('admin.payments') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
 
                     <i class="fas fa-credit-card w-4 text-purple-400"></i>

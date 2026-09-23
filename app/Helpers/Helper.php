@@ -15,8 +15,9 @@ if (! function_exists('GetSingleData')) {
         return $model::where($condition)->first();
     }
 }
-if(!function_exists("getAll")){
-    function getAll($model){
+if (! function_exists('getAll')) {
+    function getAll($model)
+    {
         return $model::paginate(10);
     }
 }
@@ -36,7 +37,7 @@ if (! function_exists('DeleteData')) {
     }
 }
 
-if (!function_exists("LazyLoadData")) {
+if (! function_exists('LazyLoadData')) {
 
     function LazyLoadData($model, $relationdata = [], $condition = [])
     {
@@ -46,4 +47,9 @@ if (!function_exists("LazyLoadData")) {
     }
 }
 
-?>
+if (! function_exists('CountData')) {
+    function CountData($model)
+    {
+        return $model::count();
+    }
+}
