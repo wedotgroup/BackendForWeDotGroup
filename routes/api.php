@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\ManageApiController;
 use App\Http\Controllers\Api\ManageOurProductController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -11,7 +13,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::post('/user/logout', [ManageApiController::class, 'LogoutUser']);
     Route::post('/addtocart/{user_id}', [ManageOurProductController::class, 'AddToCart']);
-    route::post("/apply/cuopon",[ManageOurProductController::class,'ApplyCuopon']);
+    Route::post('/apply/cuopon', [ManageOurProductController::class, 'ApplyCuopon']);
     Route::put(
         '/cart/{id}',
         [ManageOurProductController::class, 'updateCart']
@@ -30,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
         '/my/cart/items',
         [ManageOurProductController::class, 'MyCartItems']
     );
+    Route::post('/order', [PaymentController::class, 'Order']);
 });
 
 Route::post('/contact', [ManageApiController::class, 'Enquery']);
