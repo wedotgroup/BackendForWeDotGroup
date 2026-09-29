@@ -76,6 +76,13 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::get('hero/{id}/edit', 'edit')->name('admin.hero.edit');
         Route::post('hero/{id}/update', 'update')->name('admin.hero.update');
         Route::delete('hero/{id}/delete', 'destroy')->name('admin.hero.destroy');
+
+        Route::get('hero/whychoose', 'index')->name('admin.hero.whychoose');
+        Route::get('hero/whychoose/create', 'create')->name('admin.hero.whychoose.create');
+        Route::post('hero/whychoose/store', 'store')->name('admin.hero.whychoose.store');
+        Route::get('hero/whychoose/{id}/edit', 'edit')->name('admin.hero.whychoose.edit');
+        Route::post('hero/whychoose/{id}/update', 'update')->name('admin.hero.whychoose.update');
+        Route::delete('hero/whychoose/{id}/delete', 'destroy')->name('admin.hero.whychoose.destroy');
     });
 
     Route::controller(ItConsultancyController::class)->group(function () {
