@@ -96,13 +96,13 @@
 
             <div id="homeDropdown" class="hidden ml-5 mt-1 space-y-1">
 
-                <a href="#"
+                <a href="{{ route('admin.hero') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-image w-4"></i>
                     Hero Section
                 </a>
 
-                <a href="#"
+                <a href="{{ route('admin.hero.whychoose') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-star w-4"></i>
                     Why Choose Us
@@ -130,19 +130,19 @@
 
             <div id="aboutDropdown" class="hidden ml-5 mt-1 space-y-1">
 
-                <a href="#"
+                <a href="{{ route('admin.about.company') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-building w-4"></i>
                     Company Info
                 </a>
 
-                <a href="#"
+                <a href="{{ route('admin.about.missin') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-bullseye w-4"></i>
                     Mission & Vision
                 </a>
 
-                <a href="#"
+                <a href="{{ route('admin.about.ceo') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-user-tie w-4"></i>
                     CEO Message
@@ -153,7 +153,7 @@
         </div>
 
 
-        <a href="#"
+        <a href="{{ route('admin.partner') }}"
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
             <i class="fas fa-handshake w-5 text-yellow-400"></i>
@@ -162,7 +162,7 @@
         </a>
 
 
-        <a href="#"
+        <a href="{{ route('admin.location') }}"
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
             <i class="fas fa-map-marker-alt w-5 text-red-400"></i>
@@ -187,13 +187,13 @@
 
             <div id="itDropdown" class="hidden ml-5 mt-1 space-y-1">
 
-                <a href="#"
+                <a href="{{ route('admin.itconsultancy.category') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-code w-4"></i>
                     Manage Categories
                 </a>
 
-                <a href="#"
+                <a href="{{ route('admin.itconsultancy.service') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-mobile-alt w-4"></i>
                     Manage Services
@@ -220,23 +220,19 @@
 
             <div id="managementDropdown" class="hidden ml-5 mt-1 space-y-1">
 
-                <a href="#"
+                <a href="{{ route('admin.manageconsultancy.category') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-chart-line w-4"></i>
-                    Business Consulting
+                    Category
                 </a>
 
-                <a href="#"
+                <a href="{{route('admin.manageconsultancy.service')}}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-building w-4"></i>
-                    Company Setup
+                   Manage Service
                 </a>
 
-                <a href="#"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-project-diagram w-4"></i>
-                    Business Strategy
-                </a>
+                
 
             </div>
 

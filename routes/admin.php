@@ -77,12 +77,12 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::post('hero/{id}/update', 'update')->name('admin.hero.update');
         Route::delete('hero/{id}/delete', 'destroy')->name('admin.hero.destroy');
 
-        Route::get('hero/whychoose', 'index')->name('admin.hero.whychoose');
-        Route::get('hero/whychoose/create', 'create')->name('admin.hero.whychoose.create');
-        Route::post('hero/whychoose/store', 'store')->name('admin.hero.whychoose.store');
-        Route::get('hero/whychoose/{id}/edit', 'edit')->name('admin.hero.whychoose.edit');
-        Route::post('hero/whychoose/{id}/update', 'update')->name('admin.hero.whychoose.update');
-        Route::delete('hero/whychoose/{id}/delete', 'destroy')->name('admin.hero.whychoose.destroy');
+        Route::get('hero/whychoose', 'indexwhychoose')->name('admin.hero.whychoose');
+        Route::get('hero/whychoose/create', 'createwhychoose')->name('admin.hero.whychoose.create');
+        Route::post('hero/whychoose/store', 'storewhychoose')->name('admin.hero.whychoose.store');
+        Route::get('hero/whychoose/{id}/edit', 'editwhychoose')->name('admin.hero.whychoose.edit');
+        Route::post('hero/whychoose/{id}/update', 'updatewhychoose')->name('admin.hero.whychoose.update');
+        Route::delete('hero/whychoose/{id}/delete', 'destroywhychoose')->name('admin.hero.whychoose.destroy');
     });
 
     Route::controller(ItConsultancyController::class)->group(function () {
@@ -93,12 +93,12 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::post('itconsultancy/category/{id}/update', 'update')->name('admin.itconsultancy.category.update');
         Route::delete('itconsultancy/category/{id}/delete', 'destroy')->name('admin.itconsultancy.category.destroy');
 
-        Route::get('itconsultancy/service', 'index')->name('admin.itconsultancy.service');
-        Route::get('itconsultancy/service/create', 'create')->name('admin.itconsultancy.service.create');
-        Route::post('itconsultancy/service/store', 'store')->name('admin.itconsultancy.service.store');
-        Route::get('itconsultancy/service/{id}/edit', 'edit')->name('admin.itconsultancy.service.edit');
-        Route::post('itconsultancy/service/{id}/update', 'update')->name('admin.itconsultancy.service.update');
-        Route::delete('itconsultancy/service/{id}/delete', 'destroy')->name('admin.itconsultancy.service.destroy');
+        Route::get('itconsultancy/service', 'indexservice')->name('admin.itconsultancy.service');
+        Route::get('itconsultancy/service/create', 'createservice')->name('admin.itconsultancy.service.create');
+        Route::post('itconsultancy/service/store', 'storeservice')->name('admin.itconsultancy.service.store');
+        Route::get('itconsultancy/service/{id}/edit', 'editservice')->name('admin.itconsultancy.service.edit');
+        Route::post('itconsultancy/service/{id}/update', 'updateservice')->name('admin.itconsultancy.service.update');
+        Route::delete('itconsultancy/service/{id}/delete', 'destroyservice')->name('admin.itconsultancy.service.destroy');
     });
 
     Route::controller(ManagementCunsoltancyController::class)->group(function () {
