@@ -34,6 +34,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::get('/create', 'index')->name('admin.product.create');
 
     });
+
     Route::controller(CouponManageController::class)->group(function () {
         Route::get('/cuopons', 'index')->name('admin.cupons');
         Route::post('/add/cuopon', 'store')->name('admin.cuopon.store');
@@ -43,6 +44,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::delete('delete/cuopon/{id}', 'destroy')->name('admin.cuopon.delete');
 
     });
+
     Route::get('/orders', [ProductController::class, 'orders'])->name('admin.orders');
     Route::get('/payments', [ProductController::class, 'payments'])->name('admin.payments');
 
@@ -54,19 +56,19 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::post('about/company/{id}/update', 'update')->name('admin.about.company.update');
         Route::delete('about/company/{id}/delete', 'destroy')->name('admin.about.company.destroy');
 
-        Route::get('about/ceo', 'index')->name('admin.about.ceo');
-        Route::get('about/ceo/create', 'create')->name('admin.about.ceo.create');
-        Route::post('about/ceo/store', 'store')->name('admin.about.ceo.store');
-        Route::get('about/ceo/{id}/edit', 'edit')->name('admin.about.ceo.edit');
-        Route::post('about/ceo/{id}/update', 'update')->name('admin.about.ceo.update');
-        Route::delete('about/ceo/{id}/delete', 'destroy')->name('admin.about.company.destroy');
+        Route::get('about/ceo', 'indexceo')->name('admin.about.ceo');
+        Route::get('about/ceo/create', 'createceo')->name('admin.about.ceo.create');
+        Route::post('about/ceo/store', 'storeceo')->name('admin.about.ceo.store');
+        Route::get('about/ceo/{id}/edit', 'editceo')->name('admin.about.ceo.edit');
+        Route::post('about/ceo/{id}/update', 'updateceo')->name('admin.about.ceo.update');
+        Route::delete('about/ceo/{id}/delete', 'destroyceo')->name('admin.about.company.destroy');
 
-        Route::get('about/missin', 'index')->name('admin.about.missin');
-        Route::get('about/missin/create', 'create')->name('admin.about.missin.create');
-        Route::post('about/missin/store', 'store')->name('admin.about.missin.store');
-        Route::get('about/missin/{id}/edit', 'edit')->name('admin.about.missin.edit');
-        Route::post('about/missin/{id}/update', 'update')->name('admin.about.missin.update');
-        Route::delete('about/missin/{id}/delete', 'destroy')->name('admin.about.company.destroy');
+        Route::get('about/mission', 'indexmission')->name('admin.about.mission');
+        Route::get('about/mission/create', 'createmission')->name('admin.about.mission.create');
+        Route::post('about/mission/store', 'storemission')->name('admin.about.mission.store');
+        Route::get('about/mission/{id}/edit', 'editmission')->name('admin.about.mission.edit');
+        Route::post('about/mission/{id}/update', 'updatemission')->name('admin.about.mission.update');
+        Route::delete('about/mission/{id}/delete', 'destroymission')->name('admin.about.mission.destroy');
     });
 
     Route::controller(HomeController::class)->group(function () {

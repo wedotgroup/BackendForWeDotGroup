@@ -271,17 +271,12 @@
 
             </section>
 
-
-            <!-- =========================
-                     Product Image
-                ========================== -->
             <section>
 
                 <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
                     <span class="w-1.5 h-5 bg-brand-500 rounded"></span>
                     Product Image
                 </h2>
-
 
                 <!-- Existing Image -->
                 <div id="imagePreview" class="mb-4">
