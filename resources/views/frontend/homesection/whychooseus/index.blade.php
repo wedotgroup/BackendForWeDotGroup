@@ -37,8 +37,6 @@
 
     @forelse($whyChooses as $whyChoose)
 
-        <!-- ================= TOP CONTENT ================= -->
-
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
 
             <div class="px-6 py-3 border-b bg-gray-50 flex items-center justify-between">
