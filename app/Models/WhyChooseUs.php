@@ -8,5 +8,7 @@ class WhyChooseUs extends Model
 {
     protected $primaryKey = 'id';
     protected $table = "why_choose_us";
-    protected $fillable = ['heading','description','image','pdf_file','short_text','title','link_text','icons'];
+    protected $fillable = ["top_content",'multiple_data'];
+
+    protected $casts = ['top_content'=>'array','multiple_data'=>'array'];
 }

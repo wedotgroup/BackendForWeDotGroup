@@ -13,14 +13,8 @@ return new class extends Migration
     {
         Schema::create('why_choose_us', function (Blueprint $table) {
             $table->id();
-            $table->string('heading')->nullable();
-            $table->string('image')->nullable();
-            $table->string('pdf_file')->nullable();
-            $table->longText('description')->nullable();
-            $table->string('icons')->nullable();
-            $table->string('short_text')->nullable();
-            $table->string('link_text')->nullable();
-            $table->string('title')->nullable();
+           $table->json('top_content')->nullable();
+           $table->json('multiple_data')->nullable();
             $table->timestamps();
         });
     }
