@@ -219,8 +219,8 @@ class HomeController extends Controller
     public function storewhychoose(Request $request)
     {
         $request->validate([
-            'top_heading' => 'nullable|string',
-            'top_des' => 'nullable|string',
+            'top_heading' => 'required|string',
+            'top_des' => 'required|string',
 
             'title' => 'nullable|array',
             'title.*' => 'nullable|string',

@@ -92,7 +92,7 @@
                         <div class="grid items-center gap-2 sm:grid-cols-[180px_1fr]">
                             <label for="hero_title" class="text-sm font-medium text-slate-700">Hero Titel</label>
                             <input id="hero_title" name="hero_hero_title" type="text"
-                                value="{{ old('hero_title', $hero->hero_hero_title ?? '') }}"
+                                value="{{ old('hero_title', $hero->hero_title ?? '') }}"
                                 placeholder="e.g. Build faster with us"
                                 class="w-full rounded-lg border bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:ring-2
                                       @error('hero_title') border-red-300 focus:border-red-500 focus:ring-red-200 @else border-slate-300 focus:border-indigo-500 focus:ring-indigo-200 @enderror">
