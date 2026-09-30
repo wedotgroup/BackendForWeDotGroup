@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Frontend\ManagefrontControoler;
 use App\Http\Controllers\Api\ManageApiController;
 use App\Http\Controllers\Api\ManageOurProductController;
 use App\Http\Controllers\Api\PaymentController;
@@ -41,3 +42,4 @@ Route::post('/singin', [ManageApiController::class, 'SingUp']);
 Route::post('/login', [ManageApiController::class, 'SingIn']);
 Route::get('/products', [ManageOurProductController::class, 'Products']);
 Route::get('/products/{slug}', [ManageOurProductController::class, 'ProductDetails']);
+Route::get('/herosection', [ManagefrontControoler::class, 'herosection']);

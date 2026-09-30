@@ -136,7 +136,7 @@
                     Company Info
                 </a>
 
-                <a href="{{ route('admin.about.missin') }}"
+                <a href="{{ route('admin.about.mission') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
                     <i class="fas fa-bullseye w-4"></i>
                     Mission & Vision
