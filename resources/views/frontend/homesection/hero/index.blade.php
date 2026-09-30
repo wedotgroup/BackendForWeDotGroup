@@ -1,5 +1,15 @@
 @extends('layouts.master')
 @section('content')
+    @if (session('error'))
+        <script>
+            toastr.error("{{ session('error') }}");
+        </script>
+    @endif
+    @if (session('success'))
+        <script>
+            toastr.success("{{ session('success') }}");
+        </script>
+    @endif
     <div class="mx-auto w-full max-w-6xl space-y-6">
 
         <div id="listingView" class="rounded-2xl bg-white shadow-lg ring-1 ring-slate-200">
@@ -36,12 +46,12 @@
                                 Description</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                                 Badges</th>
-                            
+
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                                 Extra List</th>
-                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
-                                 Video</th>
-                            
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
+                                Video</th>
+
                             <th
                                 class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-600 w-[100px]">
                                 Actions</th>
@@ -94,7 +104,7 @@
                                     </div>
                                 </td>
 
-                               
+
 
                                 {{-- Extra List --}}
                                 <td class="px-4 py-4">
@@ -117,7 +127,7 @@
 
                                 {{-- Description --}}
                                 <td class="max-w-xs px-4 py-4 text-sm text-slate-600">
-                                    <video src="{{ asset($data->video_file ?? "") }}" autoplay muted loop></video>
+                                    <video src="{{ asset($data->video_file ?? '') }}" autoplay muted loop></video>
                                 </td>
 
 

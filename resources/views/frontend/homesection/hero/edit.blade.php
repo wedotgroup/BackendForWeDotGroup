@@ -59,7 +59,7 @@
             </div>
         @endif
 
-        <form id="heroForm"
+        <form 
               action="{{ route('admin.hero.update', $hero->id) }}"
               method="POST"
               class="space-y-6"
@@ -84,7 +84,7 @@
                 <div class="space-y-3 p-5">
                     <div class="grid items-center gap-2 sm:grid-cols-[180px_1fr]">
                         <label for="title" class="text-sm font-medium text-slate-700">Hero Title</label>
-                        <input id="title" name="title" type="text"
+                        <input id="title" name="hero_title" type="text"
                                value="{{ old('title', $hero->hero_title ?? '') }}"
                                placeholder="e.g. Build faster with us"
                                class="w-full rounded-lg border bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:ring-2
@@ -94,7 +94,7 @@
 
                     <div class="grid items-center gap-2 sm:grid-cols-[180px_1fr]">
                         <label for="subtitle" class="text-sm font-medium text-slate-700">Hero Heading</label>
-                        <input id="subtitle" name="subtitle" type="text"
+                        <input id="subtitle" name="hero_heading" type="text"
                                value="{{ old('subtitle', $hero->hero_heading ?? '') }}"
                                placeholder="e.g. Modern tools for modern teams"
                                class="w-full rounded-lg border bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:ring-2

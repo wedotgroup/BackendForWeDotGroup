@@ -11,7 +11,8 @@ class HomeController extends Controller
     public function index()
     {
         $heros = HeroSection::all();
-        return view('frontend.homesection.hero.index',compact('heros'));
+
+        return view('frontend.homesection.hero.index', compact('heros'));
     }
 
     public function create()
@@ -22,7 +23,8 @@ class HomeController extends Controller
     public function edit($id)
     {
         $hero = HeroSection::find($id);
-        return view('frontend.homesection.hero.edit',compact('hero'));
+
+        return view('frontend.homesection.hero.edit', compact('hero'));
     }
 
     public function store(Request $request)
@@ -50,11 +52,17 @@ class HomeController extends Controller
             'list_items_value' => 'nullable|array',
             'list_items_value.*' => 'nullable|string',
         ]);
+
         $herolist = [];
         foreach ($request->list_items_title as $key => $title) {
-            $herolist['title'] = $title;
-            $herolist['value'] = $request->list_items_value[$key];
+            $herolist[] = [
+                'title' => $title,
+                'value' => $request->list_items_value[$key],
+            ];
         }
+
+        
+
         $filename = '';
         if ($request->hasFile('video_file')) {
             $file = $request->file('video_file');
@@ -86,9 +94,112 @@ class HomeController extends Controller
         }
     }
 
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'badges' => 'nullable|array',
+            'badges.*' => 'nullable',
 
-    public function destroy($id) {}
+            'hero_title' => 'required|string|min:3',
+            'hero_heading' => 'required|string|min:3',
+            'description' => 'nullable',
+
+            'button_one' => 'nullable|string',
+            'link_one' => 'nullable|string',
+
+            'button_two' => 'nullable|string',
+            'link_tow' => 'nullable|string',
+
+            'extra_lists' => 'nullable|array',
+            'extra_lists.*' => 'nullable|string',
+
+            'video_file' => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400',
+
+            'list_items_title' => 'nullable|array',
+            'list_items_title.*' => 'nullable|string',
+
+            'list_items_value' => 'nullable|array',
+            'list_items_value.*' => 'nullable|string',
+        ]);
+
+        $herolist = [];
+
+        foreach ($request->list_items_title ?? [] as $key => $title) {
+
+            $herolist[] = [
+                'title' => $title,
+                'value' => $request->list_items_value[$key] ?? null,
+            ];
+        }
+
+        $hero = HeroSection::findOrFail($id);
+
+        $videoPath = $hero->video_file;
+
+        if ($request->hasFile('video_file')) {
+
+            // Delete old video
+            if ($hero->video_file) {
+
+                $oldVideo = public_path($hero->video_file);
+
+                if (file_exists($oldVideo)) {
+                    unlink($oldVideo);
+                }
+            }
+
+            $file = $request->file('video_file');
+
+            $filename = time().'.'.$file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('uploads/hero'),
+                $filename
+            );
+
+            $videoPath = 'uploads/hero/'.$filename;
+        }
+
+        $data = [
+
+            'hero_title' => $request->hero_title,
+
+            'hero_heading' => $request->hero_heading,
+
+            'description' => $request->description,
+
+            'button_one' => $request->button_one,
+
+            'link_one' => $request->link_one,
+
+            'button_two' => $request->button_two,
+
+            'link_tow' => $request->link_tow,
+
+            'video_file' => $videoPath,
+
+            'badges' => json_encode($request->badges ?? []),
+
+            'extra_lists' => json_encode($request->extra_lists ?? []),
+
+            'list_items' => json_encode($herolist),
+        ];
+
+        $hero->update($data);
+
+        return redirect()
+            ->route('admin.hero')
+            ->with('success', 'Hero section updated successfully');
+    }
+
+    public function destroy($id)
+    {
+        $getdata = HeroSection::find($id);
+      
+        $getdata->delete();
+
+        return back()->with('success', 'Data deleted successful');
+    }
 
     public function indexwhychoose()
     {
