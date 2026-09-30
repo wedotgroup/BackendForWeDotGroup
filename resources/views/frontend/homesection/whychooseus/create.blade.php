@@ -1,12 +1,12 @@
 @extends('layouts.master')
 @section('content')
-    @if ($errors->any())
-        @foreach ($errors->all() as $error)
-            <script>
-                toastr.error("{{ $error }}");
-            </script>
-        @endforeach
-    @endif
+@if ($errors->any())
+    @foreach ($errors->all() as $error)
+        <script>
+            toastr.error("{{ $error }}");
+        </script>
+    @endforeach
+@endif
     <div class="bg-gray-50 min-h-screen py-10">
 
         <div class="max-w-6xl mx-auto px-4">
@@ -17,7 +17,7 @@
                 @csrf
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-
+                   
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between mb-4 pb-2 border-b">
                             <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
