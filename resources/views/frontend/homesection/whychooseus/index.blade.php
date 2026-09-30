@@ -1,149 +1,334 @@
 @extends('layouts.master')
+
 @section('content')
- 
+
+@if (session('error'))
+    <script>
+        toastr.error("{{ session('error') }}");
+    </script>
+@endif
+
+@if (session('success'))
+    <script>
+        toastr.success("{{ session('success') }}");
+    </script>
+@endif
+
 <div class="max-w-7xl mx-auto px-4">
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Why Choose Us</h1>
-            <p class="text-sm text-gray-500 mt-1">All entries listing</p>
+            <h1 class="text-2xl font-bold text-gray-800">
+                Why Choose Us
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-1">
+                All entries listing
+            </p>
         </div>
-        <a href="{{ route('admin.hero.whychoose.create') }}" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+
+        <a href="{{ route('admin.hero.whychoose.create') }}"
+           class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
             + Add New
         </a>
     </div>
 
-    <!-- ================= TOP CONTENT TABLE ================= -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div class="px-6 py-3 border-b bg-gray-50">
-            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Top Content</h2>
-        </div>
-        <table class="w-full text-sm">
-            <tbody class="divide-y divide-gray-100">
-                <tr>
-                    <td class="px-4 py-3 w-48 font-medium text-gray-600 bg-gray-50">Heading</td>
-                    <td class="px-4 py-3 text-gray-800">Why Choose Us</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-3 font-medium text-gray-600 bg-gray-50">Description</td>
-                    <td class="px-4 py-3 text-gray-800">We deliver excellence with quality and trust.</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 
-    <!-- ================= MULTIPLE DATA TABLE ================= -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div class="px-6 py-3 border-b bg-gray-50 flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Multiple Data</h2>
-            <span class="text-xs text-gray-500">3 item(s)</span>
-        </div>
+    @forelse($whyChooses as $whyChoose)
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left">
-                <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wide">
-                    <tr>
-                        <th class="px-4 py-3 font-semibold w-12">#</th>
-                        <th class="px-4 py-3 font-semibold">Icon</th>
-                        <th class="px-4 py-3 font-semibold">Title</th>
-                        <th class="px-4 py-3 font-semibold">Description</th>
-                        <th class="px-4 py-3 font-semibold">Link</th>
-                        <th class="px-4 py-3 font-semibold">Image</th>
-                        <th class="px-4 py-3 font-semibold">Thumbnail</th>
-                        <th class="px-4 py-3 font-semibold text-center w-32">Action</th>
-                    </tr>
-                </thead>
+        <!-- ================= TOP CONTENT ================= -->
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+
+            <div class="px-6 py-3 border-b bg-gray-50 flex items-center justify-between">
+
+                <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Top Content
+                </h2>
+
+                <div class="flex gap-2">
+
+                    <a href="{{ route('admin.hero.whychoose.edit', $whyChoose->id) }}"
+                       class="rounded-md bg-yellow-500 px-3 py-1 text-xs font-semibold text-white hover:bg-yellow-600">
+                        Edit
+                    </a>
+
+                    <form action="{{ route('admin.hero.whychoose.destroy', $whyChoose->id) }}"
+                          method="POST"
+                          onsubmit="return confirm('Are you sure you want to delete this data?')">
+
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit"
+                                class="rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-700">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <table class="w-full text-sm">
+
                 <tbody class="divide-y divide-gray-100">
 
-                    <!-- Row 1 -->
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-500">1</td>
-                        <td class="px-4 py-3">
-                            <i class="fa-solid fa-star text-lg text-blue-600"></i>
-                            <span class="text-xs text-gray-500 block">fa-star</span>
+                    <tr>
+                        <td class="px-4 py-3 w-48 font-medium text-gray-600 bg-gray-50">
+                            Heading
                         </td>
-                        <td class="px-4 py-3 font-medium text-gray-800">Quality Service</td>
-                        <td class="px-4 py-3 text-gray-600 max-w-xs">We provide top quality service to all customers.</td>
-                        <td class="px-4 py-3">
-                            <a href="https://example.com" target="_blank" class="text-blue-600 hover:underline">example.com</a>
-                        </td>
-                        <td class="px-4 py-3">
-                            <img src="https://via.placeholder.com/50" alt="image"
-                                 class="h-12 w-12 rounded-md object-cover border border-gray-200">
-                        </td>
-                        <td class="px-4 py-3">
-                            <img src="https://via.placeholder.com/50" alt="thumbnail"
-                                 class="h-12 w-12 rounded-md object-cover border border-gray-200">
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <button class="rounded-md bg-yellow-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-yellow-600">Edit</button>
-                                <button class="rounded-md bg-red-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-red-700">Delete</button>
-                            </div>
+
+                        <td class="px-4 py-3 text-gray-800">
+                            {{ $whyChoose->top_content['top_heading'] ?? 'N/A' }}
                         </td>
                     </tr>
 
-                    <!-- Row 2 -->
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-500">2</td>
-                        <td class="px-4 py-3">
-                            <i class="fa-solid fa-truck-fast text-lg text-blue-600"></i>
-                            <span class="text-xs text-gray-500 block">fa-truck-fast</span>
-                        </td>
-                        <td class="px-4 py-3 font-medium text-gray-800">Fast Delivery</td>
-                        <td class="px-4 py-3 text-gray-600 max-w-xs">Quick and reliable delivery at your doorstep.</td>
-                        <td class="px-4 py-3">
-                            <a href="https://example.com/delivery" target="_blank" class="text-blue-600 hover:underline">example.com/delivery</a>
-                        </td>
-                        <td class="px-4 py-3">
-                            <img src="https://via.placeholder.com/50/3b82f6" alt="image"
-                                 class="h-12 w-12 rounded-md object-cover border border-gray-200">
-                        </td>
-                        <td class="px-4 py-3">
-                            <img src="https://via.placeholder.com/50/3b82f6" alt="thumbnail"
-                                 class="h-12 w-12 rounded-md object-cover border border-gray-200">
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <button class="rounded-md bg-yellow-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-yellow-600">Edit</button>
-                                <button class="rounded-md bg-red-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-red-700">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
 
-                    <!-- Row 3 -->
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-500">3</td>
-                        <td class="px-4 py-3">
-                            <i class="fa-solid fa-shield-halved text-lg text-blue-600"></i>
-                            <span class="text-xs text-gray-500 block">fa-shield-halved</span>
+                    <tr>
+                        <td class="px-4 py-3 font-medium text-gray-600 bg-gray-50">
+                            Description
                         </td>
-                        <td class="px-4 py-3 font-medium text-gray-800">Secure Payment</td>
-                        <td class="px-4 py-3 text-gray-600 max-w-xs">100% safe and secure payment gateway.</td>
-                        <td class="px-4 py-3">
-                            <a href="https://example.com/payment" target="_blank" class="text-blue-600 hover:underline">example.com/payment</a>
-                        </td>
-                        <td class="px-4 py-3">
-                            <img src="https://via.placeholder.com/50/10b981" alt="image"
-                                 class="h-12 w-12 rounded-md object-cover border border-gray-200">
-                        </td>
-                        <td class="px-4 py-3">
-                            <img src="https://via.placeholder.com/50/10b981" alt="thumbnail"
-                                 class="h-12 w-12 rounded-md object-cover border border-gray-200">
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <button class="rounded-md bg-yellow-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-yellow-600">Edit</button>
-                                <button class="rounded-md bg-red-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-red-700">Delete</button>
-                            </div>
+
+                        <td class="px-4 py-3 text-gray-800">
+                            {{ $whyChoose->top_content['top_des'] ?? 'N/A' }}
                         </td>
                     </tr>
 
                 </tbody>
+
             </table>
+
         </div>
-    </div>
+
+
+        <!-- ================= MULTIPLE DATA ================= -->
+
+        @php
+            $multipleData = $whyChoose->multiple_data ?? [];
+        @endphp
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
+
+            <div class="px-6 py-3 border-b bg-gray-50 flex items-center justify-between">
+
+                <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Multiple Data
+                </h2>
+
+                <span class="text-xs text-gray-500">
+                    {{ count($multipleData) }} item(s)
+                </span>
+
+            </div>
+
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-sm text-left">
+
+                    <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wide">
+
+                        <tr>
+
+                            <th class="px-4 py-3 font-semibold w-12">
+                                #
+                            </th>
+
+                            <th class="px-4 py-3 font-semibold">
+                                Icon
+                            </th>
+
+                            <th class="px-4 py-3 font-semibold">
+                                Title
+                            </th>
+
+                            <th class="px-4 py-3 font-semibold">
+                                Description
+                            </th>
+
+                            <th class="px-4 py-3 font-semibold">
+                                PDF / Image
+                            </th>
+
+                            <th class="px-4 py-3 font-semibold">
+                                Thumbnail
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @forelse($multipleData as $key => $item)
+
+                            <tr class="hover:bg-gray-50">
+
+                                <!-- Number -->
+                                <td class="px-4 py-3 font-medium text-gray-500">
+                                    {{ $key + 1 }}
+                                </td>
+
+
+                                <!-- Icon -->
+                                <td class="px-4 py-3">
+
+                                    @if(!empty($item['icon']))
+
+                                        <i class="{{ $item['icon'] }} text-lg text-blue-600"></i>
+
+                                        <span class="text-xs text-gray-500 block">
+                                            {{ $item['icon'] }}
+                                        </span>
+
+                                    @else
+
+                                        <span class="text-gray-400">
+                                            No icon
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                <!-- Title -->
+                                <td class="px-4 py-3 font-medium text-gray-800">
+
+                                    {{ $item['title'] ?? 'N/A' }}
+
+                                </td>
+
+
+                                <!-- Description -->
+                                <td class="px-4 py-3 text-gray-600 max-w-xs">
+
+                                    {{ $item['description'] ?? 'N/A' }}
+
+                                </td>
+
+
+                                <!-- PDF / Image -->
+                                <td class="px-4 py-3">
+
+                                    @if(!empty($item['pdf_image']))
+
+                                        @php
+                                            $extension = pathinfo(
+                                                $item['pdf_image'],
+                                                PATHINFO_EXTENSION
+                                            );
+                                        @endphp
+
+
+                                        @if(in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'webp', 'gif']))
+
+                                            <a href="{{ asset('uploads/whychoose/pdf/' . $item['pdf_image']) }}"
+                                               target="_blank">
+
+                                                <img src="{{ asset('uploads/whychoose/pdf/' . $item['pdf_image']) }}"
+                                                     alt="image"
+                                                     class="h-12 w-12 rounded-md object-cover border border-gray-200">
+
+                                            </a>
+
+                                        @else
+
+                                            <a href="{{ asset('uploads/whychoose/pdf/' . $item['pdf_image']) }}"
+                                               target="_blank"
+                                               class="text-blue-600 hover:underline">
+
+                                                View PDF
+
+                                            </a>
+
+                                        @endif
+
+                                    @else
+
+                                        <span class="text-gray-400">
+                                            No file
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                <!-- Thumbnail -->
+                                <td class="px-4 py-3">
+
+                                    @if(!empty($item['thumbnail']))
+
+                                        <a href="{{ asset('uploads/whychoose/thumbnail/' . $item['thumbnail']) }}"
+                                           target="_blank">
+
+                                            <img src="{{ asset('uploads/whychoose/thumbnail/' . $item['thumbnail']) }}"
+                                                 alt="thumbnail"
+                                                 class="h-12 w-12 rounded-md object-cover border border-gray-200">
+
+                                        </a>
+
+                                    @else
+
+                                        <span class="text-gray-400">
+                                            No thumbnail
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="6"
+                                    class="px-4 py-8 text-center text-gray-500">
+
+                                    No multiple data found.
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    @empty
+
+        <!-- No data -->
+
+        <div class="bg-white rounded-lg border border-gray-200 p-8 text-center">
+
+            <p class="text-gray-500 mb-4">
+                No Why Choose Us data found.
+            </p>
+
+            <a href="{{ route('admin.hero.whychoose.create') }}"
+               class="inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+
+                + Add New
+
+            </a>
+
+        </div>
+
+    @endforelse
 
 </div>
 

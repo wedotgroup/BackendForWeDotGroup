@@ -202,7 +202,8 @@ class HomeController extends Controller
 
     public function indexwhychoose()
     {
-        return view('frontend.homesection.whychooseus.index');
+        $whyChooses = WhyChooseUs::all();
+        return view('frontend.homesection.whychooseus.index',compact('whyChooses'));
     }
 
     public function createwhychoose()
