@@ -299,7 +299,154 @@ class HomeController extends Controller
 
     }
 
-    public function updatewhychoose(Request $request, $id) {}
+    public function updatewhychoose(Request $request, $id)
+    {
+        $request->validate([
+            'top_heading' => 'nullable|string',
+            'top_des' => 'nullable|string',
 
-    public function destroywhychoose($id) {}
+            'title' => 'nullable|array',
+            'title.*' => 'nullable|string',
+
+            'icons' => 'nullable|array',
+            'icons.*' => 'nullable|string',
+
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string',
+
+            'pdf_image' => 'nullable|array',
+            'pdf_image.*' => 'nullable|file',
+
+            'thumbnail' => 'nullable|array',
+            'thumbnail.*' => 'nullable|file',
+        ]);
+
+        $whychoose = WhyChooseUs::findOrFail($id);
+
+        $topdata = [
+            'top_heading' => $request->top_heading,
+            'top_des' => $request->top_des,
+        ];
+
+        $oldMultipleData = $whychoose->multiple_data ?? [];
+
+        $multipledata = [];
+
+        $titles = $request->title ?? [];
+        $icons = $request->icons ?? [];
+        $descriptions = $request->description ?? [];
+
+        foreach ($titles as $key => $title) {
+
+            $pdfImageName = $oldMultipleData[$key]['pdf_image'] ?? null;
+            $thumbnailName = $oldMultipleData[$key]['thumbnail'] ?? null;
+
+            if ($request->hasFile("pdf_image.$key")) {
+
+                // Delete old file
+                if (
+                    $pdfImageName &&
+                    file_exists(
+                        public_path('uploads/whychoose/pdf/'.$pdfImageName)
+                    )
+                ) {
+                    unlink(
+                        public_path('uploads/whychoose/pdf/'.$pdfImageName)
+                    );
+                }
+
+                $pdfImage = $request->file("pdf_image.$key");
+
+                $pdfImageName = time().'_'.$key.'_'.
+                    $pdfImage->getClientOriginalName();
+
+                $pdfImage->move(
+                    public_path('uploads/whychoose/pdf'),
+                    $pdfImageName
+                );
+            }
+
+            if ($request->hasFile("thumbnail.$key")) {
+
+                // Delete old thumbnail
+                if (
+                    $thumbnailName &&
+                    file_exists(
+                        public_path('uploads/whychoose/thumbnail/'.$thumbnailName)
+                    )
+                ) {
+                    unlink(
+                        public_path('uploads/whychoose/thumbnail/'.$thumbnailName)
+                    );
+                }
+
+                $thumbnail = $request->file("thumbnail.$key");
+
+                $thumbnailName = time().'_'.$key.'_'.
+                    $thumbnail->getClientOriginalName();
+
+                $thumbnail->move(
+                    public_path('uploads/whychoose/thumbnail'),
+                    $thumbnailName
+                );
+            }
+
+            $multipledata[] = [
+                'title' => $title,
+                'icon' => $icons[$key] ?? null,
+                'description' => $descriptions[$key] ?? null,
+                'pdf_image' => $pdfImageName,
+                'thumbnail' => $thumbnailName,
+            ];
+        }
+
+        $whychoose->update([
+            'top_content' => $topdata,
+            'multiple_data' => $multipledata,
+        ]);
+
+        return redirect()
+            ->route('admin.hero.whychoose')
+            ->with('success', 'Data updated successfully');
+    }
+
+    public function destroywhychoose($id)
+    {
+        $whychoose = WhyChooseUs::findOrFail($id);
+
+        $multipleData = $whychoose->multiple_data ?? [];
+
+        foreach ($multipleData as $data) {
+
+            // Delete PDF / Image
+            if (
+                ! empty($data['pdf_image']) &&
+                file_exists(
+                    public_path('uploads/whychoose/pdf/'.$data['pdf_image'])
+                )
+            ) {
+                unlink(
+                    public_path('uploads/whychoose/pdf/'.$data['pdf_image'])
+                );
+            }
+
+            // Delete Thumbnail
+            if (
+                ! empty($data['thumbnail']) &&
+                file_exists(
+                    public_path('uploads/whychoose/thumbnail/'.$data['thumbnail'])
+                )
+            ) {
+                unlink(
+                    public_path('uploads/whychoose/thumbnail/'.$data['thumbnail'])
+                );
+            }
+        }
+
+        $whychoose->delete();
+
+        return redirect()
+            ->route('admin.hero.whychoose')
+            ->with('success', 'Data deleted successfully');
+    }
 }
