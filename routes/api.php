@@ -7,7 +7,6 @@ use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -33,7 +32,27 @@ Route::middleware('auth:sanctum')->group(function () {
         '/my/cart/items',
         [ManageOurProductController::class, 'MyCartItems']
     );
-    Route::post('/order', [PaymentController::class, 'Order']);
+    Route::post('/payment/tabby', [PaymentController::class, 'TabbyPayment']);
+
+    Route::get(
+        '/tabby/success/{orderReference}',
+        [PaymentController::class, 'TabbySuccess']
+    );
+
+    Route::get(
+        '/tabby/cancel/{orderReference}',
+        [PaymentController::class, 'TabbyCancel']
+    );
+
+    Route::get(
+        '/tabby/failure/{orderReference}',
+        [PaymentController::class, 'TabbyFailure']
+    );
+
+    Route::post(
+        '/tabby/webhook',
+        [PaymentController::class, 'TabbyWebhook']
+    );
 });
 
 Route::post('/contact', [ManageApiController::class, 'Enquery']);
