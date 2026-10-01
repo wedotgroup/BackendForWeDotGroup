@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\AboutUsController;
 use App\Http\Controllers\Backend\HomeController;
 use App\Http\Controllers\Backend\ItConsultancyController;
 use App\Http\Controllers\Backend\LocationController;
+use App\Http\Controllers\Backend\ManageConsultancyController;
 use App\Http\Controllers\Backend\ManagementCunsoltancyController;
 use App\Http\Controllers\Backend\PartnersController;
 use Illuminate\Support\Facades\Route;
@@ -135,6 +136,15 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::get('partner/{id}/edit', 'edit')->name('admin.partner.edit');
         Route::post('partner/{id}/update', 'update')->name('admin.partner.update');
         Route::delete('partner/{id}/delete', 'destroy')->name('admin.partner.destroy');
+    });
+
+    Route::controller(ManageConsultancyController::class)->group(function () {
+        Route::get('manageconsul', 'index')->name('admin.manageconsul');
+        Route::get('manageconsul/create', 'create')->name('admin.manageconsul.create');
+        Route::post('manageconsul/store', 'store')->name('admin.manageconsul.store');
+        Route::get('manageconsul/{id}/edit', 'edit')->name('admin.manageconsul.edit');
+        Route::post('manageconsul/{id}/update', 'update')->name('admin.manageconsul.update');
+        Route::delete('manageconsul/{id}/delete', 'destroy')->name('admin.manageconsul.destroy');
     });
 
 });
