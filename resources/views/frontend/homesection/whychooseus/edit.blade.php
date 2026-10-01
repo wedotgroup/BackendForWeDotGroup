@@ -53,7 +53,7 @@
                                           class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Link</label>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Link Content</label>
                                 <input type="text" name="link_text" placeholder="https://example.com"
                                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
                             </div>
@@ -139,7 +139,7 @@
                           class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
             </div>
             <div class="md:col-span-2">
-                <label class="block text-xs font-medium text-gray-600 mb-1">Link</label>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Link Content</label>
                 <input type="text" name="link_text" placeholder=""
                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
             </div>

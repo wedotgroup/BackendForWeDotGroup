@@ -1,12 +1,12 @@
 @extends('layouts.master')
 @section('content')
-@if ($errors->any())
-    @foreach ($errors->all() as $error)
-        <script>
-            toastr.error("{{ $error }}");
-        </script>
-    @endforeach
-@endif
+    @if ($errors->any())
+        @foreach ($errors->all() as $error)
+            <script>
+                toastr.error("{{ $error }}");
+            </script>
+        @endforeach
+    @endif
     <div class="bg-gray-50 min-h-screen py-10">
 
         <div class="max-w-6xl mx-auto px-4">
@@ -17,7 +17,7 @@
                 @csrf
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-                   
+
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between mb-4 pb-2 border-b">
                             <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
@@ -44,9 +44,11 @@
                                     <!-- Text inputs (4) -->
                                     <div>
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
-                                        <input type="text" name="icons[]" placeholder="fa-star"
-                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+                                        <textarea name="icons[]" placeholder="<svg ...>...</svg>" rows="3"
+                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
+                                        <p class="text-sm text-gray-400">Only SVG icons are allowed</p>
                                     </div>
+
                                     <div>
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
                                         <input type="text" name="title[]" placeholder="Enter title"
@@ -58,7 +60,7 @@
                                             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">Link</label>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">Link Content</label>
                                         <input type="text" name="link_text" placeholder="https://example.com"
                                             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
                                     </div>
@@ -81,7 +83,7 @@
 
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:sticky lg:top-6">
                         <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b">
-                            Top Content
+                            (optinal) Top Content
                         </h2>
 
                         <div class="space-y-4">
@@ -129,10 +131,12 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
-                        <input type="text" name="icons[]" placeholder="fa-star"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                    </div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
+                                        <textarea name="icons[]" placeholder="<svg ...>...</svg>" rows="3"
+                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
+                                        <p class="text-sm text-gray-400">Only SVG icons are allowed</p>
+                                    </div>
+
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
                         <input type="text" name="title[]" placeholder="Enter title"
@@ -144,7 +148,7 @@
                             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Link</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Link Content</label>
                         <input type="text" name="link_text[]" placeholder=""
                             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
                     </div>

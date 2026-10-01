@@ -219,8 +219,8 @@ class HomeController extends Controller
     public function storewhychoose(Request $request)
     {
         $request->validate([
-            'top_heading' => 'required|string',
-            'top_des' => 'required|string',
+            'top_heading' => 'nullable|string',
+            'top_des' => 'nullable|string',
 
             'title' => 'nullable|array',
             'title.*' => 'nullable|string',
@@ -288,7 +288,7 @@ class HomeController extends Controller
         }
 
         $createdata = WhyChooseUs::create([
-            'top_content' => $topdata,
+            // 'top_content' => $topdata,
             'multiple_data' => $multipledata,
         ]);
         if ($createdata) {
