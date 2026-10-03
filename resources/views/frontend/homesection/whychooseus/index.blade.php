@@ -37,74 +37,6 @@
 
     @forelse($whyChooses as $whyChoose)
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
-
-            <div class="px-6 py-3 border-b bg-gray-50 flex items-center justify-between">
-
-                <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                    Top Content
-                </h2>
-
-                <div class="flex gap-2">
-
-                    <a href="{{ route('admin.hero.whychoose.edit', $whyChoose->id) }}"
-                       class="rounded-md bg-yellow-500 px-3 py-1 text-xs font-semibold text-white hover:bg-yellow-600">
-                        Edit
-                    </a>
-
-                    <form action="{{ route('admin.hero.whychoose.destroy', $whyChoose->id) }}"
-                          method="POST"
-                          onsubmit="return confirm('Are you sure you want to delete this data?')">
-
-                        @csrf
-                        @method('DELETE')
-
-                        <button type="submit"
-                                class="rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-700">
-                            Delete
-                        </button>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-
-            <table class="w-full text-sm">
-
-                <tbody class="divide-y divide-gray-100">
-
-                    <tr>
-                        <td class="px-4 py-3 w-48 font-medium text-gray-600 bg-gray-50">
-                            Heading
-                        </td>
-
-                        <td class="px-4 py-3 text-gray-800">
-                            {{ $whyChoose->top_content['top_heading'] ?? 'N/A' }}
-                        </td>
-                    </tr>
-
-
-                    <tr>
-                        <td class="px-4 py-3 font-medium text-gray-600 bg-gray-50">
-                            Description
-                        </td>
-
-                        <td class="px-4 py-3 text-gray-800">
-                            {{ $whyChoose->top_content['top_des'] ?? 'N/A' }}
-                        </td>
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        <!-- ================= MULTIPLE DATA ================= -->
-
         @php
             $multipleData = $whyChoose->multiple_data ?? [];
         @endphp
@@ -306,10 +238,11 @@
             </div>
 
         </div>
+        
 
     @empty
 
-        <!-- No data -->
+        
 
         <div class="bg-white rounded-lg border border-gray-200 p-8 text-center">
 

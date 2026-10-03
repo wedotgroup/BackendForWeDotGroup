@@ -292,6 +292,9 @@ class PaymentController extends Controller
                 ];
             }
 
+            $frontendUrl = 'http://localhost:5173';
+            // https://wedotgroup.in/
+
             $payload = [
 
                 'payment' => [
@@ -405,20 +408,17 @@ class PaymentController extends Controller
 
                 'merchant_urls' => [
 
-                'success' => url(
-                    '/api/tabby/success/'
-                    .$orderReference
-                ),
+                    'success' => url(
+                        $frontendUrl.'/payment/tabby/success'
+                    ),
 
-                'cancel' => url(
-                    '/api/tabby/cancel/'
-                    .$orderReference
-                ),
+                    'cancel' => url(
+                        $frontendUrl.'/payment/tabby/cancel',
+                    ),
 
-                'failure' => url(
-                    '/api/tabby/failure/'
-                    .$orderReference
-                ),
+                    'failure' => url(
+                        $frontendUrl.'/payment/tabby/failed'
+                    ),
                 ],
             ];
 
