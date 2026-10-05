@@ -183,9 +183,7 @@ class PaymentController extends Controller
             if (! $secretKey) {
 
                 return response()->json([
-
                     'success' => false,
-
                     'message' => 'TABBY_SECRET_KEY is missing in .env',
 
                 ], 500);
@@ -194,11 +192,8 @@ class PaymentController extends Controller
             if (! $apiUrl) {
 
                 return response()->json([
-
                     'success' => false,
-
                     'message' => 'TABBY_API_URL is missing in .env',
-
                 ], 500);
             }
 

@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('about_u_s', function (Blueprint $table) {
+        Schema::create('why_choose_us', function (Blueprint $table) {
             $table->id();
-            $table->json('hero_section')->nullable();
-            $table->json("about_company")->nullable();
-            $table->json('mission')->nullable();
-            $table->json("vison")->nullable();
-            $table->json("ceo_message")->nullable();
+            $table->longText('icons')->nullable();
+            $table->string('title')->nullable();
+            $table->longText('description')->nullable();
+            $table->string('thumbnail')->nullable();
+            $table->string('pdf_file')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('about_u_s');
+        Schema::dropIfExists('why_choose_us');
     }
 };

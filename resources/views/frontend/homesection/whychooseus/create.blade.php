@@ -15,87 +15,56 @@
 
             <form action="{{ route('admin.hero.whychoose.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 items-start">
 
 
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div class="flex items-center justify-between mb-4 pb-2 border-b">
-                            <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                                Multiple Data
-                            </h2>
-                            <button type="button" id="add-more"
-                                class="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-                                + Add More
-                            </button>
-                        </div>
+
 
                         <div id="multiple-data-container" data-next-index="1"
                             class="space-y-4 max-h-[600px] overflow-y-auto pr-1">
 
                             <!-- Row 1 -->
                             <div class="multiple-data-row rounded-md border border-gray-200 bg-gray-50 p-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <span class="row-number text-xs font-semibold text-gray-500 uppercase">Item 1</span>
-                                    <button type="button"
-                                        class="remove-row text-xs text-red-600 hover:underline">Remove</button>
-                                </div>
+
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <!-- Text inputs (4) -->
                                     <div>
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
-                                        <textarea name="icons[]" placeholder="<svg ...>...</svg>" rows="3"
-                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
+                                        <textarea name="icons" placeholder="<svg ...>...</svg>" rows="3"
+                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">{{ old('icons') }}</textarea>
                                         <p class="text-sm text-gray-400">Only SVG icons are allowed</p>
                                     </div>
 
                                     <div>
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
-                                        <input type="text" name="title[]" placeholder="Enter title"
+                                        <input type="text" name="title" placeholder="Enter title" value="{{old("title")}}"
                                             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
-                                        <textarea name="description[]" rows="2" placeholder="Enter description"
-                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
+                                        <textarea name="description" rows="2" placeholder="Enter description"
+                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">{{ old("description") }}</textarea>
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Link Content</label>
-                                        <input type="text" name="link_text" placeholder="https://example.com"
+                                        <input type="text" name="link_text" value="{{ old('link_text') }}" placeholder=""
                                             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
                                     </div>
 
                                     <!-- File inputs (2) -->
                                     <div>
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Upload PDF</label>
-                                        <input type="file" name="pdf_image[]" accept="image/*"
+                                        <input type="file" name="pdf_file" value="{{ old("pdf_file") }}" accept="image/*"
                                             class="w-full text-xs rounded-md border border-gray-300 bg-white file:mr-3 file:rounded-l-md file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-blue-700">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Thumbnail</label>
-                                        <input type="file" name="thumbnail[]" accept="image/*"
+                                        <input type="file" name="thumbnail" value="{{ old("thumbnail") }}"
                                             class="w-full text-xs rounded-md border border-gray-300 bg-white file:mr-3 file:rounded-l-md file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-blue-700">
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:sticky lg:top-6">
-                        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b">
-                            (optinal) Top Content
-                        </h2>
-
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Heading</label>
-                                <input type="text" name="top_heading" placeholder="Enter heading"
-                                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                <textarea name="top_des" rows="4" placeholder="Enter description"
-                                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
                             </div>
                         </div>
                     </div>
@@ -122,118 +91,7 @@
 
         </div>
 
-        <!-- Template -->
-        <template id="multiple-data-template">
-            <div class="multiple-data-row rounded-md border border-gray-200 bg-gray-50 p-4">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="row-number text-xs font-semibold text-gray-500 uppercase"></span>
-                    <button type="button" class="remove-row text-xs text-red-600 hover:underline">Remove</button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
-                                        <textarea name="icons[]" placeholder="<svg ...>...</svg>" rows="3"
-                                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
-                                        <p class="text-sm text-gray-400">Only SVG icons are allowed</p>
-                                    </div>
 
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
-                        <input type="text" name="title[]" placeholder="Enter title"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
-                        <textarea name="description[]" rows="2" placeholder="Enter description"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Link Content</label>
-                        <input type="text" name="link_text[]" placeholder=""
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Image</label>
-                        <input type="file" name="pdf_image[]" accept="image/*"
-                            class="w-full text-xs rounded-md border border-gray-300 bg-white file:mr-3 file:rounded-l-md file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-blue-700">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Thumbnail</label>
-                        <input type="file" name="thumbnail[]" accept="image/*"
-                            class="w-full text-xs rounded-md border border-gray-300 bg-white file:mr-3 file:rounded-l-md file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-blue-700">
-                    </div>
-                </div>
-            </div>
-        </template>
 
-        <script>
-            const container = document.getElementById('multiple-data-container');
-            const template = document.getElementById('multiple-data-template');
-            const addButton = document.getElementById('add-more');
-            const form = document.getElementById('whyForm');
-            const output = document.getElementById('output');
-            const pre = output.querySelector('pre');
 
-            function renumber() {
-                container.querySelectorAll('.multiple-data-row').forEach((row, i) => {
-                    row.querySelector('.row-number').textContent = 'Item ' + (i + 1);
-                });
-            }
-
-            addButton.addEventListener('click', () => {
-                const index = parseInt(container.dataset.nextIndex) || 0;
-                const html = template.innerHTML.replace(/__INDEX__/g, index);
-                container.insertAdjacentHTML('beforeend', html);
-                container.dataset.nextIndex = index + 1;
-                renumber();
-            });
-
-            container.addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-row')) {
-                    const row = e.target.closest('.multiple-data-row');
-                    if (container.querySelectorAll('.multiple-data-row').length > 1) {
-                        row.remove();
-                        renumber();
-                    } else {
-                        row.querySelectorAll('input, textarea').forEach(f => {
-                            if (f.type === 'file') f.value = '';
-                            else f.value = '';
-                        });
-                    }
-                }
-            });
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const fd = new FormData(form);
-                const data = {
-                    top_content: {},
-                    multiple_data: []
-                };
-
-                for (const [key, value] of fd.entries()) {
-                    const mTop = key.match(/^top_content\[(.+)\]$/);
-                    const mMulti = key.match(/^multiple_data\[(\d+)\]\[(.+)\]$/);
-                    if (mTop) {
-                        data.top_content[mTop[1]] = value;
-                    } else if (mMulti) {
-                        const idx = parseInt(mMulti[1]);
-                        const field = mMulti[2];
-                        if (!data.multiple_data[idx]) data.multiple_data[idx] = {};
-                        data.multiple_data[idx][field] = (value instanceof File) ?
-                            `[File: ${value.name || 'empty'}]` :
-                            value;
-                    }
-                }
-                data.multiple_data = data.multiple_data.filter(Boolean);
-
-                pre.textContent = JSON.stringify(data, null, 2);
-                output.classList.remove('hidden');
-                output.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-
-            renumber();
-        </script>
     @endsection

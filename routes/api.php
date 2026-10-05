@@ -62,3 +62,7 @@ Route::post('/login', [ManageApiController::class, 'SingIn']);
 Route::get('/products', [ManageOurProductController::class, 'Products']);
 Route::get('/products/{slug}', [ManageOurProductController::class, 'ProductDetails']);
 Route::get('/herosection', [ManagefrontControoler::class, 'herosection']);
+Route::get('/whychoose', [ManagefrontControoler::class, 'whychoose']);
+Route::get('/managecansultancy', [ManagefrontControoler::class, 'manageCansultancy']);
+Route::get('/ourpartnerlogo', [ManagefrontControoler::class, 'OurPartnerLogo']);
+Route::get('/abouts', [ManagefrontControoler::class, 'aboutUsAPI']);

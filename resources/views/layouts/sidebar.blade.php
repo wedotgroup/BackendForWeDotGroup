@@ -16,6 +16,7 @@
             <i class="fas fa-tachometer-alt w-5 text-indigo-400"></i>
             <span>Dashboard</span>
         </a>
+
         <a href="{{ route('admin.userlist') }}"
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
@@ -23,6 +24,7 @@
             <span>Users</span>
 
         </a>
+        
         <div>
 
             <!-- Our Products -->
@@ -110,7 +112,7 @@
 
                 <a href="{{ route('admin.manageconsul') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-star w-4"></i>
+                    <i class="fas fa-chart-line w-4"></i>
                     Manage Cunsoltancy
                 </a>
 
@@ -122,39 +124,13 @@
 
         <div>
 
-            <button type="button" onclick="toggleDropdown('aboutDropdown', 'aboutArrow')"
-                class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+            <a href="{{ route('admin.abouts') }}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
 
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-info-circle w-5 text-blue-400"></i>
-                    <span>About Section</span>
-                </div>
+            <i class="fas fa-info-circle w-5 text-yellow-400"></i>
+            <span>AboutUs</span>
 
-                <i id="aboutArrow" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
-
-            </button>
-
-            <div id="aboutDropdown" class="hidden ml-5 mt-1 space-y-1">
-
-                <a href="{{ route('admin.about.company') }}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-building w-4"></i>
-                    Company Info
-                </a>
-
-                <a href="{{ route('admin.about.mission') }}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-bullseye w-4"></i>
-                    Mission & Vision
-                </a>
-
-                <a href="{{ route('admin.about.ceo') }}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <i class="fas fa-user-tie w-4"></i>
-                    CEO Message
-                </a>
-
-            </div>
+        </a>
 
         </div>
 

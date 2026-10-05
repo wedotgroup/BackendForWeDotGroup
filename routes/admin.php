@@ -50,26 +50,14 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
     Route::get('/payments', [ProductController::class, 'payments'])->name('admin.payments');
 
     Route::controller(AboutUsController::class)->group(function () {
-        Route::get('about/company', 'index')->name('admin.about.company');
-        Route::get('about/company/create', 'create')->name('admin.about.company.create');
-        Route::post('about/company/store', 'store')->name('admin.about.company.store');
-        Route::get('about/company/{id}/edit', 'edit')->name('admin.about.company.edit');
-        Route::post('about/company/{id}/update', 'update')->name('admin.about.company.update');
-        Route::delete('about/company/{id}/delete', 'destroy')->name('admin.about.company.destroy');
+        
+        Route::get('about/', 'index')->name('admin.abouts');
+        Route::get('about/create', 'create')->name('admin.about.create');
+        Route::post('about/store', 'store')->name('admin.about.store');
+        Route::get('about/{id}/edit', 'edit')->name('admin.about.edit');
+        Route::post('about/{id}/update', 'update')->name('admin.about.update');
+        Route::delete('about/{id}/delete', 'destroy')->name('admin.about.destroy');
 
-        Route::get('about/ceo', 'indexceo')->name('admin.about.ceo');
-        Route::get('about/ceo/create', 'createceo')->name('admin.about.ceo.create');
-        Route::post('about/ceo/store', 'storeceo')->name('admin.about.ceo.store');
-        Route::get('about/ceo/{id}/edit', 'editceo')->name('admin.about.ceo.edit');
-        Route::post('about/ceo/{id}/update', 'updateceo')->name('admin.about.ceo.update');
-        Route::delete('about/ceo/{id}/delete', 'destroyceo')->name('admin.about.company.destroy');
-
-        Route::get('about/mission', 'indexmission')->name('admin.about.mission');
-        Route::get('about/mission/create', 'createmission')->name('admin.about.mission.create');
-        Route::post('about/mission/store', 'storemission')->name('admin.about.mission.store');
-        Route::get('about/mission/{id}/edit', 'editmission')->name('admin.about.mission.edit');
-        Route::post('about/mission/{id}/update', 'updatemission')->name('admin.about.mission.update');
-        Route::delete('about/mission/{id}/delete', 'destroymission')->name('admin.about.mission.destroy');
     });
 
     Route::controller(HomeController::class)->group(function () {

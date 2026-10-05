@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('management_consultancies', function (Blueprint $table) {
+        Schema::create('manage_consultancies', function (Blueprint $table) {
             $table->id();
-            $table->json('multiple')->nullable();
+            $table->longText('icons')->nullable();
+            $table->string('title')->nullable();
+            $table->string('thumbnail')->nullable();
+            $table->string('company_name')->nullable();
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('management_consultancies');
+        Schema::dropIfExists('manage_consultancies');
     }
 };

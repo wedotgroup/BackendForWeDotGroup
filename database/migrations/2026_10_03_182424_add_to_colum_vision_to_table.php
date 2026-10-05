@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('why_choose_us', function (Blueprint $table) {
-            $table->id();
-           $table->json('top_content')->nullable();
-           $table->json('multiple_data')->nullable();
-            $table->timestamps();
+        Schema::table('about_u_s', function (Blueprint $table) {
+            $table->json('vision')->nullable();
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('why_choose_us');
+        Schema::table('about_u_s', function (Blueprint $table) {
+            //
+        });
     }
 };

@@ -203,7 +203,8 @@ class HomeController extends Controller
     public function indexwhychoose()
     {
         $whyChooses = WhyChooseUs::all();
-        return view('frontend.homesection.whychooseus.index',compact('whyChooses'));
+
+        return view('frontend.homesection.whychooseus.index', compact('whyChooses'));
     }
 
     public function createwhychoose()
@@ -213,234 +214,145 @@ class HomeController extends Controller
 
     public function editwhychoose($id)
     {
-        return view('frontend.homesection.whychooseus.edit');
+        $whychoose = WhyChooseUs::findOrfail($id);
+
+        return view('frontend.homesection.whychooseus.edit', compact('whychoose'));
     }
 
     public function storewhychoose(Request $request)
     {
         $request->validate([
-            'top_heading' => 'nullable|string',
-            'top_des' => 'nullable|string',
-
-            'title' => 'nullable|array',
-            'title.*' => 'nullable|string',
-
-            'icons' => 'nullable|array',
-            'icons.*' => 'nullable|string',
-
-            'description' => 'nullable|array',
-            'description.*' => 'nullable|string',
-
-            'pdf_image' => 'nullable|array',
-            'pdf_image.*' => 'nullable|file',
-
-            'thumbnail' => 'nullable|array',
-            'thumbnail.*' => 'nullable|file',
+            'icons' => 'required|string',
+            'link_text' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'pdf_file' => 'required|file',
+            'thumbnail' => 'required|file',
         ]);
 
-        $topdata = [
-            'top_heading' => $request->top_heading,
-            'top_des' => $request->top_des,
+        $pdfFile = '';
+        $thumbnailfile = '';
+
+        if ($request->hasFile('pdf_file')) {
+            $file = $request->file('pdf_file');
+            $filename = time().'.'.$file->getClientOriginalExtension();
+            $pdfFile = 'uploads/whychoose/'.$filename;
+            $file->move(public_path('uploads/whychoose'), $filename);
+        }
+
+        if ($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            $thumbnail = time().'.'.$file->getClientOriginalExtension();
+            $thumbnailfile = 'uploads/thumbnail/'.$thumbnail;
+            $file->move(public_path('uploads/thumbnail'), $thumbnail);
+        }
+
+        $data = [
+            'icons' => $request->icons,
+            'title' => $request->title,
+            'link_text' => $request->link_text,
+            'description' => $request->description,
+            'thumbnail' => $thumbnailfile,
+            'pdf_file' => $pdfFile,
         ];
 
-        $multipledata = [];
+        AddData(WhyChooseUs::class, $data);
 
-        $titles = $request->title ?? [];
-        $icons = $request->icons ?? [];
-        $descriptions = $request->description ?? [];
-
-        foreach ($titles as $key => $title) {
-
-            $pdfImageName = null;
-            $thumbnailName = null;
-
-            if ($request->hasFile("pdf_image.$key")) {
-
-                $pdfImage = $request->file("pdf_image.$key");
-
-                $pdfImageName = time().'_'.$key.'_'.$pdfImage->getClientOriginalName();
-
-                $pdfImage->move(
-                    public_path('uploads/whychoose/pdf'),
-                    $pdfImageName
-                );
-            }
-
-            if ($request->hasFile("thumbnail.$key")) {
-
-                $thumbnail = $request->file("thumbnail.$key");
-
-                $thumbnailName = time().'_'.$key.'_'.$thumbnail->getClientOriginalName();
-
-                $thumbnail->move(
-                    public_path('uploads/whychoose/thumbnail'),
-                    $thumbnailName
-                );
-            }
-
-            $multipledata[] = [
-                'title' => $title,
-                'icon' => $icons[$key] ?? null,
-                'description' => $descriptions[$key] ?? null,
-                'pdf_image' => $pdfImageName,
-                'thumbnail' => $thumbnailName,
-            ];
-        }
-
-        $createdata = WhyChooseUs::create([
-            // 'top_content' => $topdata,
-            'multiple_data' => $multipledata,
-        ]);
-        if ($createdata) {
-            return redirect()->route('admin.hero.whychoose')->with('success', 'Data created SuccessFul');
-
-        } else {
-            return back()->with('error', 'Data creatation failed');
-        }
-
+        return redirect()->route('admin.hero.whychoose')->with('success', 'Data Created SuccessFul');
     }
 
     public function updatewhychoose(Request $request, $id)
     {
-        $request->validate([
-            'top_heading' => 'nullable|string',
-            'top_des' => 'nullable|string',
-
-            'title' => 'nullable|array',
-            'title.*' => 'nullable|string',
-
-            'icons' => 'nullable|array',
-            'icons.*' => 'nullable|string',
-
-            'description' => 'nullable|array',
-            'description.*' => 'nullable|string',
-
-            'pdf_image' => 'nullable|array',
-            'pdf_image.*' => 'nullable|file',
-
-            'thumbnail' => 'nullable|array',
-            'thumbnail.*' => 'nullable|file',
-        ]);
-
         $whychoose = WhyChooseUs::findOrFail($id);
 
-        $topdata = [
-            'top_heading' => $request->top_heading,
-            'top_des' => $request->top_des,
-        ];
+        $request->validate([
+            'icons' => 'required|string',
+            'link_text' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'pdf_file' => 'nullable|file',
+            'thumbnail' => 'nullable|file',
+        ]);
 
-        $oldMultipleData = $whychoose->multiple_data ?? [];
+        $pdfFile = $whychoose->pdf_file;
+        $thumbnailfile = $whychoose->thumbnail;
 
-        $multipledata = [];
+        if ($request->hasFile('pdf_file')) {
 
-        $titles = $request->title ?? [];
-        $icons = $request->icons ?? [];
-        $descriptions = $request->description ?? [];
+            if (! empty($whychoose->pdf_file)) {
+                $oldpdf = public_path($whychoose->pdf_file);
 
-        foreach ($titles as $key => $title) {
-
-            $pdfImageName = $oldMultipleData[$key]['pdf_image'] ?? null;
-            $thumbnailName = $oldMultipleData[$key]['thumbnail'] ?? null;
-
-            if ($request->hasFile("pdf_image.$key")) {
-
-                // Delete old file
-                if (
-                    $pdfImageName &&
-                    file_exists(
-                        public_path('uploads/whychoose/pdf/'.$pdfImageName)
-                    )
-                ) {
-                    unlink(
-                        public_path('uploads/whychoose/pdf/'.$pdfImageName)
-                    );
+                if (file_exists($oldpdf)) {
+                    unlink($oldpdf);
                 }
-
-                $pdfImage = $request->file("pdf_image.$key");
-
-                $pdfImageName = time().'_'.$key.'_'.
-                    $pdfImage->getClientOriginalName();
-
-                $pdfImage->move(
-                    public_path('uploads/whychoose/pdf'),
-                    $pdfImageName
-                );
             }
 
-            if ($request->hasFile("thumbnail.$key")) {
+            $file = $request->file('pdf_file');
 
-                // Delete old thumbnail
-                if (
-                    $thumbnailName &&
-                    file_exists(
-                        public_path('uploads/whychoose/thumbnail/'.$thumbnailName)
-                    )
-                ) {
-                    unlink(
-                        public_path('uploads/whychoose/thumbnail/'.$thumbnailName)
-                    );
-                }
+            $filename = time().'_pdf.'.$file->getClientOriginalExtension();
 
-                $thumbnail = $request->file("thumbnail.$key");
+            $file->move(
+                public_path('uploads/whychoose'),
+                $filename
+            );
 
-                $thumbnailName = time().'_'.$key.'_'.
-                    $thumbnail->getClientOriginalName();
-
-                $thumbnail->move(
-                    public_path('uploads/whychoose/thumbnail'),
-                    $thumbnailName
-                );
-            }
-
-            $multipledata[] = [
-                'title' => $title,
-                'icon' => $icons[$key] ?? null,
-                'description' => $descriptions[$key] ?? null,
-                'pdf_image' => $pdfImageName,
-                'thumbnail' => $thumbnailName,
-            ];
+            $pdfFile = 'uploads/whychoose/'.$filename;
         }
 
-        $whychoose->update([
-            'top_content' => $topdata,
-            'multiple_data' => $multipledata,
-        ]);
+        if ($request->hasFile('thumbnail')) {
+
+            if (! empty($whychoose->thumbnail)) {
+                $oldthumbnail = public_path($whychoose->thumbnail);
+
+                if (file_exists($oldthumbnail)) {
+                    unlink($oldthumbnail);
+                }
+            }
+
+            $file = $request->file('thumbnail');
+
+            $filename = time().'_thumbnail.'.$file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('uploads/thumbnail'),
+                $filename
+            );
+
+            $thumbnailfile = 'uploads/thumbnail/'.$filename;
+        }
+
+        $data = [
+            'icons' => $request->icons,
+            'title' => $request->title,
+            'link_text' => $request->link_text,
+            'description' => $request->description,
+            'thumbnail' => $thumbnailfile,
+            'pdf_file' => $pdfFile,
+        ];
+
+        UpdateData(WhyChooseUs::class, $data, ['id' => $id]);
 
         return redirect()
             ->route('admin.hero.whychoose')
-            ->with('success', 'Data updated successfully');
+            ->with('success', 'Data Updated Successfully');
     }
 
     public function destroywhychoose($id)
     {
         $whychoose = WhyChooseUs::findOrFail($id);
+        if (! empty($whychoose->thumbnail)) {
+            $oldthumbnail = public_path($whychoose->thumbnail);
 
-        $multipleData = $whychoose->multiple_data ?? [];
-
-        foreach ($multipleData as $data) {
-
-            // Delete PDF / Image
-            if (
-                ! empty($data['pdf_image']) &&
-                file_exists(
-                    public_path('uploads/whychoose/pdf/'.$data['pdf_image'])
-                )
-            ) {
-                unlink(
-                    public_path('uploads/whychoose/pdf/'.$data['pdf_image'])
-                );
+            if (file_exists($oldthumbnail)) {
+                unlink($oldthumbnail);
             }
+        }
 
-            // Delete Thumbnail
-            if (
-                ! empty($data['thumbnail']) &&
-                file_exists(
-                    public_path('uploads/whychoose/thumbnail/'.$data['thumbnail'])
-                )
-            ) {
-                unlink(
-                    public_path('uploads/whychoose/thumbnail/'.$data['thumbnail'])
-                );
+        if (! empty($whychoose->pdf_file)) {
+            $oldpdf = public_path($whychoose->pdf_file);
+
+            if (file_exists($oldpdf)) {
+                unlink($oldpdf);
             }
         }
 
