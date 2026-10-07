@@ -33,7 +33,6 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::delete('/product/delete/{id}', 'destroy')->name('admin.product.destroy');
         Route::get('/packing/highligh/{index}', 'packingdelete')->name('admin.highlight.delete');
         Route::get('/create', 'index')->name('admin.product.create');
-
     });
 
     Route::controller(CouponManageController::class)->group(function () {
@@ -43,21 +42,19 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::post('/update/cuopon/{id}', 'update')->name('admin.cuopon.update');
         Route::get('/edit/coupon/{id}', 'edit')->name('admin.cuopon.edit');
         Route::delete('delete/cuopon/{id}', 'destroy')->name('admin.cuopon.delete');
-
     });
 
     Route::get('/orders', [ProductController::class, 'orders'])->name('admin.orders');
     Route::get('/payments', [ProductController::class, 'payments'])->name('admin.payments');
 
     Route::controller(AboutUsController::class)->group(function () {
-        
+
         Route::get('about/', 'index')->name('admin.abouts');
         Route::get('about/create', 'create')->name('admin.about.create');
         Route::post('about/store', 'store')->name('admin.about.store');
         Route::get('about/{id}/edit', 'edit')->name('admin.about.edit');
         Route::post('about/{id}/update', 'update')->name('admin.about.update');
         Route::delete('about/{id}/delete', 'destroy')->name('admin.about.destroy');
-
     });
 
     Route::controller(HomeController::class)->group(function () {
@@ -83,6 +80,13 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::get('itconsultancy/category/{id}/edit', 'edit')->name('admin.itconsultancy.category.edit');
         Route::post('itconsultancy/category/{id}/update', 'update')->name('admin.itconsultancy.category.update');
         Route::delete('itconsultancy/category/{id}/delete', 'destroy')->name('admin.itconsultancy.category.destroy');
+
+        Route::get('itconsultancy/category', 'indexsubcate')->name('admin.itconsultancy.category');
+        Route::get('itconsultancy/category/create', 'createsubcate')->name('admin.itconsultancy.category.create');
+        Route::post('itconsultancy/subcate/store', 'storesubcate')->name('admin.itconsultancy.subcate.store');
+        Route::get('itconsultancy/category/{id}/edit', 'editsubcate')->name('admin.itconsultancy.category.edit');
+        Route::post('itconsultancy/subcate/{id}/update', 'updatesubcate')->name('admin.itconsultancy.subcate.update');
+        Route::delete('itconsultancy/subcate/{id}/delete', 'destroysubcate')->name('admin.itconsultancy.subcate.destroy');
 
         Route::get('itconsultancy/service', 'indexservice')->name('admin.itconsultancy.service');
         Route::get('itconsultancy/service/create', 'createservice')->name('admin.itconsultancy.service.create');
@@ -134,5 +138,4 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::post('manageconsul/{id}/update', 'update')->name('admin.manageconsul.update');
         Route::delete('manageconsul/{id}/delete', 'destroy')->name('admin.manageconsul.destroy');
     });
-
 });

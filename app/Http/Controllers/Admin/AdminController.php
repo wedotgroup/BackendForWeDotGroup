@@ -84,6 +84,7 @@ class AdminController extends Controller
             return back()->with('error', 'Your eamil is incorrect');
         }
         $url = env('APP_URL');
+
         $data = [
             'link' => 'http://127.0.0.1:8000/viewfps',
         ];
@@ -104,12 +105,14 @@ class AdminController extends Controller
 
     public function UpdatePassword(Request $request)
     {
+
         $request->validate([
             'email' => 'required|string|email|exists:users,email',
             'password' => 'required|string|confirmed',
         ]);
 
         $user = GetSingleData(User::class)->where(['email' => $request->email, 'role'=>'admin']);
+
         if (! $user) {
             return back()->with('error', 'Your Email is Incorrect');
         }
@@ -121,3 +124,4 @@ class AdminController extends Controller
         return redirect('/')->with('success','Your Password Updated SuccessFul');
     }
 }
+

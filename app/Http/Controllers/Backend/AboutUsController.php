@@ -168,7 +168,7 @@ class AboutUsController extends Controller
 
             'founderTitle'     => 'nullable|string',
             'founderHeading'   => 'nullable|string',
-            'founderImage' => "nullable|file",
+            'founderImage'     => "nullable|file",
             'founderName'      => 'nullable|string',
             'founderShortDesc' => 'nullable|string',
             'founderParagraph' => 'nullable|string',
@@ -281,6 +281,6 @@ class AboutUsController extends Controller
         }
 
         $about->delete();
-        return back('admin.abouts')->with("success", 'Data delete successful');
+        return redirect()->route('admin.abouts')->with("success", 'Data delete successful');
     }
 }
