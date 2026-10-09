@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendOrderInvoiceJob;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class PaymentController extends Controller
 {
+   
+
     public function TabbyPayment(Request $request)
     {
         try {
@@ -20,123 +22,152 @@ class PaymentController extends Controller
 
                 'payment_method' => 'required|in:tabby',
 
-                'first_name' => 'nullable|string',
-                'last_name' => 'nullable|string',
-                'name' => 'nullable|string',
+                'first_name' => 'required|string|max:100',
 
-                'email' => 'nullable|email',
-                'phone' => 'nullable|string',
+                'last_name' => 'required|string|max:100',
 
-                'address' => 'nullable|string',
-                'city' => 'nullable|string',
-                'state' => 'nullable|string',
-                'country' => 'nullable|string',
-                'zip' => 'nullable|string',
+                'email' => 'required|email',
 
-                'cartItems' => 'nullable|array',
-                'items' => 'nullable|array',
+                'phone' => 'required|string|max:30',
 
-                'total' => 'nullable|numeric',
-                'subtotal' => 'nullable|numeric',
-                'discount' => 'nullable|numeric',
-                'shipping' => 'nullable|numeric',
+                'address' => 'required|string',
 
-                'payment_plan_id' => 'nullable',
-                'payment_plan_title' => 'nullable|string',
-                'payment_plan_amount' => 'nullable|numeric',
-                'payment_plan_fee' => 'nullable|numeric',
-                'payment_installments' => 'nullable|integer',
+                'city' => 'required|string',
+
+                'country' => 'required|string',
+
+                'total' => 'required|numeric|min:0.01',
+
             ]);
 
+
+           
+
             $orderReference =
-                'ORD-'.strtoupper(Str::random(10));
+                'ORD-' .
+                strtoupper(Str::random(10));
 
-            $amount = $request->input('total');
-
-            if ($amount === null || $amount === '') {
-
-                $amount = $request->input('subtotal');
-            }
-
-            if ($amount === null || $amount === '') {
-
-                $amount = $request->input('amount');
-            }
-
-            $amount = (float) $amount;
-
-            if ($amount <= 0) {
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid payment amount.',
-                    'amount' => $amount,
-                ], 422);
-            }
 
             $amount = number_format(
-                $amount,
+                (float) $request->total,
                 2,
                 '.',
                 ''
             );
 
-            $firstName = trim(
-                (string) $request->input(
-                    'first_name',
-                    ''
-                )
+
+            
+
+            $order = Order::create([
+
+                'order_reference' => $orderReference,
+
+                'user_id' => auth()->id(),
+
+                'first_name' => $request->first_name,
+
+                'last_name' => $request->last_name,
+
+                'email' => $request->email,
+
+                'phone' => $request->phone,
+
+                'address' => $request->address,
+
+                'city' => $request->city,
+
+                'state' => $request->state,
+
+                'country' => $request->country,
+
+                'zip' => $request->zip,
+
+                'subtotal' => $request->subtotal ?? $amount,
+
+                'discount' => $request->discount ?? 0,
+
+                'shipping' => $request->shipping ?? 0,
+
+                'total' => $amount,
+
+                'payment_method' => 'tabby',
+
+                'payment_status' => 'pending',
+
+                'order_status' => 'pending',
+
+            ]);
+
+
+           
+
+            $checkout = $this->createTabbyCheckout(
+                $request,
+                $order,
+                $amount
             );
 
-            $lastName = trim(
-                (string) $request->input(
-                    'last_name',
-                    ''
-                )
-            );
 
-            $customerName = trim(
-                $firstName.' '.$lastName
-            );
+            if (!$checkout['success']) {
 
-            if (! $customerName) {
+                $order->update([
 
-                $customerName = $request->input(
-                    'name',
-                    'Test Customer'
-                );
+                    'payment_status' => 'failed',
+
+                    'payment_error' =>
+                        $checkout['message'],
+
+                    'order_status' => 'failed',
+
+                ]);
+
+                return response()->json([
+
+                    'success' => false,
+
+                    'message' =>
+                        $checkout['message'],
+
+                ], 422);
             }
 
-            $customerEmail = $request->input(
-                'email',
-                'card.success@tabby.ai'
-            );
 
-            $customerPhone = $request->input(
-                'phone',
-                '500000001'
-            );
+           
 
-            return $this->createTabbyCheckout(
-                $request,
-                $orderReference,
-                $amount,
-                $customerName,
-                $customerEmail,
-                $customerPhone
-            );
+            $order->update([
 
-        } catch (ValidationException $e) {
+                'tabby_payment_id' =>
+                    $checkout['payment_id'] ?? null,
+
+                'tabby_session_id' =>
+                    $checkout['session_id'] ?? null,
+
+                'tabby_status' =>
+                    $checkout['status'] ?? 'created',
+
+            ]);
+
 
             return response()->json([
 
-                'success' => false,
+                'success' => true,
 
-                'message' => 'Validation failed.',
+                'message' =>
+                    'Tabby checkout created successfully.',
 
-                'errors' => $e->errors(),
+                'order_id' =>
+                    $order->id,
 
-            ], 422);
+                'order_reference' =>
+                    $order->order_reference,
+
+                'payment_id' =>
+                    $order->tabby_payment_id,
+
+                'checkout_url' =>
+                    $checkout['checkout_url'],
+
+            ]);
 
         } catch (\Throwable $e) {
 
@@ -144,921 +175,641 @@ class PaymentController extends Controller
                 'Tabby Payment Error',
                 [
                     'message' => $e->getMessage(),
-                    'file' => $e->getFile(),
+
                     'line' => $e->getLine(),
+
+                    'file' => $e->getFile(),
+
+                    'trace' => $e->getTraceAsString(),
                 ]
             );
+
 
             return response()->json([
 
                 'success' => false,
 
-                'message' => 'Payment server error.',
+                'message' =>
+                    'Unable to create Tabby payment.',
 
-                'error' => $e->getMessage(),
+                'error' =>
+                    $e->getMessage(),
 
             ], 500);
         }
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE TABBY CHECKOUT
+    |--------------------------------------------------------------------------
+    */
 
     private function createTabbyCheckout(
         Request $request,
-        string $orderReference,
-        string $amount,
-        string $customerName,
-        string $customerEmail,
-        string $customerPhone
-    ) {
+        Order $order,
+        string $amount
+    ): array {
 
-        try {
+        $frontendUrl = rtrim(
+            env('FRONTEND_URL'),
+            '/'
+        );
 
-            $secretKey = env(
-                'TABBY_SECRET_KEY'
-            );
 
-            $apiUrl = env(
-                'TABBY_API_URL'
-            );
+        $payload = [
 
-            if (! $secretKey) {
+            'payment' => [
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'TABBY_SECRET_KEY is missing in .env',
+                'amount' => $amount,
 
-                ], 500);
-            }
+                'currency' => 'AED',
 
-            if (! $apiUrl) {
+                'description' =>
+                    'Order ' . $order->order_reference,
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'TABBY_API_URL is missing in .env',
-                ], 500);
-            }
+                'buyer' => [
 
-            $requestItems = $request->input(
-                'cartItems',
-                $request->input(
-                    'items',
-                    []
-                )
-            );
+                    'phone' =>
+                        $request->phone,
 
-            $items = [];
+                    'email' =>
+                        $request->email,
 
-            foreach (
-                $requestItems as $index => $item
-            ) {
-
-                $quantity = (int) (
-                    $item['quantity']
-                    ?? $item['qty']
-                    ?? 1
-                );
-
-                if ($quantity < 1) {
-
-                    $quantity = 1;
-                }
-
-                $unitPrice = (float) (
-                    $item['price']
-                    ?? $item['unit_price']
-                    ?? $item['amount']
-                    ?? 0
-                );
-
-                $title =
-                    $item['title']
-                    ?? $item['name']
-                    ?? $item['product_name']
-                    ?? 'Product';
-
-                $referenceId = (string) (
-                    $item['id']
-                    ?? $item['product_id']
-                    ?? $item['productId']
-                    ?? ($index + 1)
-                );
-
-                $items[] = [
-
-                    'title' => $title,
-
-                    'description' => $item['description']
-                        ?? 'Product purchase',
-
-                    'quantity' => $quantity,
-
-                    'unit_price' => number_format(
-                        $unitPrice,
-                        2,
-                        '.',
-                        ''
-                    ),
-
-                    'discount_amount' => '0.00',
-
-                    'reference_id' => $referenceId,
-
-                    'category' => $item['category']
-                        ?? 'General',
-                ];
-            }
-
-            if (empty($items)) {
-
-                $items[] = [
-
-                    'title' => 'Order '.$orderReference,
-
-                    'description' => 'Online purchase',
-
-                    'quantity' => 1,
-
-                    'unit_price' => $amount,
-
-                    'discount_amount' => '0.00',
-
-                    'reference_id' => $orderReference,
-
-                    'category' => 'General',
-                ];
-            }
-
-            $frontendUrl = 'http://localhost:5173';
-            // https://wedotgroup.in/
-
-            $payload = [
-
-                'payment' => [
-
-                    'amount' => $amount,
-
-                    'currency' => 'AED',
-
-                    'description' => 'Order '.$orderReference,
-
-                    'buyer' => [
-
-                        'phone' => $customerPhone,
-
-                        'email' => $customerEmail,
-
-                        'name' => $customerName,
-                    ],
-
-                    'buyer_history' => [
-
-                        'registered_since' => now()
-                            ->subYear()
-                            ->toIso8601String(),
-
-                        'loyalty_level' => 0,
-
-                        'wishlist_count' => 0,
-
-                        'is_social_networks_connected' => false,
-
-                        'is_phone_number_verified' => false,
-
-                        'is_email_verified' => true,
-                    ],
-
-                    'order' => [
-
-                        'tax_amount' => '0.00',
-
-                        'shipping_amount' => number_format(
-                            (float) $request->input(
-                                'shipping',
-                                0
-                            ),
-                            2,
-                            '.',
-                            ''
-                        ),
-
-                        'discount_amount' => number_format(
-                            (float) $request->input(
-                                'discount',
-                                0
-                            ),
-                            2,
-                            '.',
-                            ''
-                        ),
-
-                        'updated_at' => now()->toIso8601String(),
-
-                        'reference_id' => $orderReference,
-
-                        'items' => $items,
-                    ],
-
-                    'shipping_address' => [
-
-                        'city' => $request->input(
-                            'city',
-                            'Dubai'
-                        ),
-
-                        'address' => $request->input(
-                            'address',
-                            'Dubai'
-                        ),
-
-                        'zip' => $request->input(
-                            'zip',
-                            '00000'
-                        ),
-                    ],
-
-                    'meta' => [
-
-                        'order_id' => $orderReference,
-
-                        'customer' => $customerEmail,
-
-                        'payment_plan_id' => $request->input(
-                            'payment_plan_id'
-                        ),
-
-                        'payment_plan_title' => $request->input(
-                            'payment_plan_title'
-                        ),
-
-                        'payment_installments' => $request->input(
-                            'payment_installments'
-                        ),
-                    ],
                 ],
 
-                'lang' => 'en',
+                'buyer_history' => [
 
-                'merchant_code' => env(
-                    'TABBY_MARCHANT_CODE'
-                ),
+                    'registered_since' =>
+                        now()->toISOString(),
 
-                'merchant_urls' => [
+                    'loyalty_level' => 0,
 
-                    'success' => url(
-                        $frontendUrl.'/payment/tabby/success'
-                    ),
-
-                    'cancel' => url(
-                        $frontendUrl.'/payment/tabby/cancel',
-                    ),
-
-                    'failure' => url(
-                        $frontendUrl.'/payment/tabby/failed'
-                    ),
-                ],
-            ];
-
-            Log::info(
-                'Tabby Checkout Request',
-                [
-
-                    'order_reference' => $orderReference,
-
-                    'amount' => $amount,
-
-                    'customer_email' => $customerEmail,
-
-                    'payment_plan' => $request->input(
-                        'payment_plan_title'
-                    ),
-
-                    'items_count' => count($items),
-                ]
-            );
-
-            $response = Http::withHeaders([
-
-                'Authorization' => 'Bearer '.$secretKey,
-
-                'Accept' => 'application/json',
-
-                'Content-Type' => 'application/json',
-
-            ])
-                ->timeout(30)
-                ->post(
-
-                    rtrim(
-                        $apiUrl,
-                        '/'
-                    ).'/api/v2/checkout',
-
-                    $payload
-                );
-
-            $tabbyResponse =
-                $response->json();
-
-            Log::info(
-                'Tabby Checkout Response',
-                [
-
-                    'status' => $response->status(),
-
-                    'response' => $tabbyResponse,
-                ]
-            );
-
-            if ($response->failed()) {
-
-                Log::error(
-                    'Tabby API Failed',
-                    [
-
-                        'order_reference' => $orderReference,
-
-                        'status' => $response->status(),
-
-                        'response' => $tabbyResponse,
-                    ]
-                );
-
-                return response()->json([
-
-                    'success' => false,
-
-                    'message' => 'Tabby API request failed.',
-
-                    'status' => $response->status(),
-
-                    'error' => $tabbyResponse,
-
-                ], $response->status());
-            }
-
-            if (
-                isset($tabbyResponse['status'])
-                &&
-                $tabbyResponse['status']
-                === 'rejected'
-            ) {
-
-                return response()->json([
-
-                    'success' => false,
-
-                    'message' => 'Tabby payment is not available for this order.',
-
-                    'tabby_response' => $tabbyResponse,
-
-                ], 422);
-            }
-
-            $checkoutUrl =
-
-                data_get(
-                    $tabbyResponse,
-                    'configuration.available_products.installments.0.web_url'
-                )
-
-                ??
-
-                data_get(
-                    $tabbyResponse,
-                    'web_url'
-                )
-
-                ??
-
-                data_get(
-                    $tabbyResponse,
-                    'checkout_url'
-                );
-
-            if (! $checkoutUrl) {
-
-                return response()->json([
-
-                    'success' => false,
-
-                    'message' => 'Tabby checkout URL not found.',
-
-                    'tabby_response' => $tabbyResponse,
-
-                ], 422);
-            }
-
-            $tabbyPaymentId =
-                data_get(
-                    $tabbyResponse,
-                    'id'
-                );
-
-            $tabbyStatus =
-                data_get(
-                    $tabbyResponse,
-                    'status'
-                );
-
-            $order = new Order;
-
-            $order->order_reference =
-                $orderReference;
-
-            $order->payment_method =
-                'tabby';
-
-            $order->payment_status =
-                'pending';
-
-            $order->order_status =
-                'pending';
-
-            $order->tabby_payment_id =
-                $tabbyPaymentId;
-
-            $order->tabby_session_id =
-                $tabbyPaymentId;
-
-            $order->tabby_status =
-                $tabbyStatus;
-
-            $order->total =
-                (float) $amount;
-
-            $order->save();
-
-            return response()->json([
-
-                'success' => true,
-
-                'message' => 'Tabby checkout created successfully.',
-
-                'order_reference' => $orderReference,
-
-                'checkout_url' => $checkoutUrl,
-
-                'payment_url' => $checkoutUrl,
-
-                'tabby' => [
-
-                    'id' => $tabbyPaymentId,
-
-                    'status' => $tabbyStatus,
-
-                    'web_url' => $checkoutUrl,
                 ],
 
-            ], 200);
+                'order' => [
 
-        } catch (\Throwable $e) {
+                    'reference_id' =>
+                        $order->order_reference,
+
+                    'items' => [],
+
+                ],
+
+                'order_history' => [],
+
+            ],
+
+
+            'lang' => 'en',
+
+
+            'merchant_code' =>
+                env('TABBY_MARCHANT_CODE', 'AE'),
+
+
+            'merchant_urls' => [
+
+               
+
+                'success' =>
+                    $frontendUrl .
+                    '/payment/tabby/success/' .
+                    $order->order_reference,
+
+                'cancel' =>
+                    $frontendUrl .
+                    '/payment/tabby/cancel/' .
+                    $order->order_reference,
+
+                'failure' =>
+                    $frontendUrl .
+                    '/payment/tabby/failed/' .
+                    $order->order_reference,
+
+            ],
+
+        ];
+
+
+        
+
+        $response = Http::withToken(
+            env('TABBY_SECRET_KEY')
+        )
+            ->acceptJson()
+            ->post(
+                rtrim(
+                    env('TABBY_API_URL'),
+                    '/'
+                ) . '/api/v2/checkout',
+                $payload
+            );
+
+
+        
+
+        if ($response->failed()) {
 
             Log::error(
-                'Tabby Checkout Exception',
+                'Tabby Checkout Failed',
                 [
+                    'status' =>
+                        $response->status(),
 
-                    'message' => $e->getMessage(),
+                    'response' =>
+                        $response->json(),
 
-                    'file' => $e->getFile(),
-
-                    'line' => $e->getLine(),
+                    'payload' =>
+                        $payload,
                 ]
             );
 
-            return response()->json([
+
+            return [
 
                 'success' => false,
 
-                'message' => 'Tabby checkout creation failed.',
+                'message' =>
+                    $response->json(
+                        'error',
+                        'Tabby checkout failed.'
+                    ),
 
-                'error' => $e->getMessage(),
-
-            ], 500);
+            ];
         }
+
+
+        $data = $response->json();
+
+
+        
+
+        $checkoutUrl =
+            data_get(
+                $data,
+                'configuration.available_products.installments.0.web_url'
+            )
+            ??
+            data_get(
+                $data,
+                'web_url'
+            )
+            ??
+            data_get(
+                $data,
+                'checkout_url'
+            );
+
+
+        if (!$checkoutUrl) {
+
+            Log::error(
+                'Tabby Checkout URL Missing',
+                [
+                    'response' => $data,
+                ]
+            );
+
+
+            return [
+
+                'success' => false,
+
+                'message' =>
+                    'Tabby checkout URL was not returned.',
+
+            ];
+        }
+
+
+      
+        return [
+
+            'success' => true,
+
+            'checkout_url' =>
+                $checkoutUrl,
+
+            'payment_id' =>
+                data_get(
+                    $data,
+                    'payment.id'
+                )
+                ??
+                data_get(
+                    $data,
+                    'id'
+                ),
+
+            'session_id' =>
+                data_get(
+                    $data,
+                    'session.id'
+                )
+                ??
+                data_get(
+                    $data,
+                    'id'
+                ),
+
+            'status' =>
+                data_get(
+                    $data,
+                    'status',
+                    'created'
+                ),
+
+        ];
     }
 
-    public function TabbySuccess(
-        string $orderReference
-    ) {
 
-        $order = Order::where(
-            'order_reference',
-            $orderReference
-        )->first();
+   
 
-        if (! $order) {
-
-            return response()->json([
-
-                'success' => false,
-
-                'message' => 'Order not found.',
-
-            ], 404);
-        }
-
-        Log::info(
-            'Tabby Success Callback',
-            [
-
-                'order_reference' => $orderReference,
-
-                'payment_status' => $order->payment_status,
-            ]
-        );
-
+    public function TabbySuccess(Request $request)
+    {
         return response()->json([
 
             'success' => true,
 
-            'message' => 'Tabby checkout completed. Payment confirmation pending.',
+            'message' =>
+                'Payment success page.',
 
-            'order_reference' => $orderReference,
+            'payment_id' =>
+                $request->payment_id,
 
-            'payment_status' => $order->payment_status,
-
-            'order_status' => $order->order_status,
-
-        ]);
-    }
-
-    public function TabbyCancel(
-        string $orderReference
-    ) {
-
-        $order = Order::where(
-            'order_reference',
-            $orderReference
-        )->first();
-
-        if (! $order) {
-
-            return response()->json([
-
-                'success' => false,
-
-                'message' => 'Order not found.',
-
-            ], 404);
-        }
-
-        if (
-            $order->payment_status === 'pending'
-        ) {
-
-            $order->payment_status =
-                'cancelled';
-
-            $order->order_status =
-                'cancelled';
-
-            $order->save();
-        }
-
-        Log::info(
-            'Tabby Cancel Callback',
-            [
-
-                'order_reference' => $orderReference,
-
-                'payment_status' => $order->payment_status,
-            ]
-        );
-
-        return response()->json([
-
-            'success' => true,
-
-            'message' => 'Tabby payment cancelled.',
-
-            'order_reference' => $orderReference,
-
-            'payment_status' => $order->payment_status,
-
-            'order_status' => $order->order_status,
+            'order_reference' =>
+                $request->order_reference,
 
         ]);
     }
 
-    public function TabbyFailure(
-        string $orderReference
-    ) {
 
-        $order = Order::where(
-            'order_reference',
-            $orderReference
-        )->first();
+    
 
-        if (! $order) {
-
-            return response()->json([
-
-                'success' => false,
-
-                'message' => 'Order not found.',
-
-            ], 404);
-        }
-
-        if (
-            $order->payment_status === 'pending'
-        ) {
-
-            $order->payment_status =
-                'failed';
-
-            $order->order_status =
-                'payment_failed';
-
-            $order->payment_error =
-                'Tabby payment failed.';
-
-            $order->save();
-        }
-
-        Log::warning(
-            'Tabby Failure Callback',
-            [
-
-                'order_reference' => $orderReference,
-            ]
-        );
-
+    public function TabbyCancel(Request $request)
+    {
         return response()->json([
 
             'success' => false,
 
-            'message' => 'Tabby payment failed.',
+            'status' => 'cancelled',
 
-            'order_reference' => $orderReference,
+            'message' =>
+                'Tabby payment was cancelled.',
 
-            'payment_status' => $order->payment_status,
+            'payment_id' =>
+                $request->payment_id,
 
-        ], 422);
+            'order_reference' =>
+                $request->order_reference,
+
+        ]);
     }
 
-    public function TabbyWebhook(
-        Request $request
-    ) {
 
+    
+
+    public function TabbyFailure(Request $request)
+    {
+        return response()->json([
+
+            'success' => false,
+
+            'status' => 'failed',
+
+            'message' =>
+                'Tabby payment failed.',
+
+            'payment_id' =>
+                $request->payment_id,
+
+            'order_reference' =>
+                $request->order_reference,
+
+        ]);
+    }
+
+
+   
+
+    public function TabbyWebhook(Request $request)
+    {
         try {
 
-            $payload = $request->all();
+           
 
             Log::info(
-                'Tabby Webhook Received',
-                $payload
+                'TABBY WEBHOOK RECEIVED',
+                [
+                    'payload' =>
+                        $request->all(),
+                ]
             );
 
-            $event = strtolower(
 
-                $request->input('event')
-                ??
-                $request->input('type')
-                ??
-                ''
-            );
+            $data = $request->all();
+
+
+
+            $event =
+                strtolower(
+                    $request->input('event')
+                    ??
+                    $request->input('type')
+                    ??
+                    $request->input('status')
+                    ??
+                    ''
+                );
+
+
+           
 
             $paymentId =
-
                 data_get(
-                    $payload,
-                    'id'
-                )
-
-                ??
-
-                data_get(
-                    $payload,
+                    $data,
                     'payment.id'
                 )
-
                 ??
-
                 data_get(
-                    $payload,
-                    'payment_id'
-                );
+                    $data,
+                    'id'
+                )
+                ??
+                $request->input('payment_id');
 
-            $referenceId =
 
+           
+            $orderReference =
                 data_get(
-                    $payload,
+                    $data,
+                    'payment.order.reference_id'
+                )
+                ??
+                data_get(
+                    $data,
                     'order.reference_id'
                 )
-
                 ??
-
-                data_get(
-                    $payload,
+                $request->input(
                     'order_reference'
-                )
-
-                ??
-
-                data_get(
-                    $payload,
-                    'reference_id'
                 );
+
+
 
             $order = null;
 
-            if ($referenceId) {
+
+            if ($orderReference) {
 
                 $order = Order::where(
                     'order_reference',
-                    $referenceId
+                    $orderReference
                 )->first();
             }
 
-            if (
-                ! $order
-                &&
-                $paymentId
-            ) {
+
+            if (!$order && $paymentId) {
 
                 $order = Order::where(
                     'tabby_payment_id',
                     $paymentId
                 )->first();
             }
-            if (! $order) {
+
+
+            if (!$order) {
 
                 Log::warning(
-                    'Tabby Webhook Order Not Found',
+                    'Tabby webhook order not found',
                     [
+                        'payment_id' =>
+                            $paymentId,
 
-                        'event' => $event,
-
-                        'payment_id' => $paymentId,
-
-                        'reference_id' => $referenceId,
+                        'order_reference' =>
+                            $orderReference,
                     ]
                 );
 
+
+                /*
+                | Return 200 so Tabby doesn't
+                | unnecessarily keep retrying
+                */
+
                 return response()->json([
+
                     'success' => true,
+
+                    'message' =>
+                        'Order not found.',
+
                 ]);
             }
 
-            if ($paymentId) {
 
-                $order->tabby_payment_id =
-                    $paymentId;
-            }
+
+            $order->tabby_payment_id =
+                $paymentId
+                ??
+                $order->tabby_payment_id;
 
             $order->tabby_status =
-                $event;
+                $event
+                ??
+                $order->tabby_status;
 
-            switch ($event) {
 
-                case 'authorize':
+            /*
+            |--------------------------------------------------------------------------
+            | PAYMENT CAPTURED
+            |--------------------------------------------------------------------------
+            */
 
-                    $order->payment_status =
-                        'authorized';
+            if (
+                in_array(
+                    $event,
+                    [
+                        'capture',
+                        'captured',
+                        'paid',
+                    ],
+                    true
+                )
+            ) {
 
-                    $order->order_status =
-                        'processing';
+                /*
+                |--------------------------------------------------------------------------
+                | Prevent duplicate processing
+                |--------------------------------------------------------------------------
+                */
 
-                    break;
-
-                case 'capture':
-
-                    if (
-                        $order->payment_status
-                        !== 'paid'
-                    ) {
-
-                        $order->payment_status =
-                            'paid';
-
-                        $order->order_status =
-                            'confirmed';
-
-                        $order->paid_at =
-                            now();
-                    }
-
-                    break;
-
-                case 'close':
-
-                    if (
-                        $order->payment_status
-                        !== 'paid'
-                    ) {
-
-                        $order->payment_status =
-                            'cancelled';
-
-                        $order->order_status =
-                            'cancelled';
-                    }
-
-                    break;
-
-                case 'reject':
-
-                    if (
-                        $order->payment_status
-                        !== 'paid'
-                    ) {
-
-                        $order->payment_status =
-                            'failed';
-
-                        $order->order_status =
-                            'payment_failed';
-
-                        $order->payment_error =
-                            'Tabby payment rejected.';
-                    }
-
-                    break;
-
-                case 'expire':
-
-                    if (
-                        $order->payment_status
-                        !== 'paid'
-                    ) {
-
-                        $order->payment_status =
-                            'expired';
-
-                        $order->order_status =
-                            'cancelled';
-                    }
-
-                    break;
-
-                case 'refund':
+                if (
+                    $order->payment_status !== 'paid'
+                ) {
 
                     $order->payment_status =
-                        'refunded';
+                        'paid';
 
                     $order->order_status =
-                        'refunded';
+                        'confirmed';
 
-                    break;
+                    $order->paid_at =
+                        now();
 
-                case 'update':
+                    $order->payment_error =
+                        null;
 
-                    Log::info(
-                        'Tabby Payment Updated',
-                        [
+                    $order->save();
 
-                            'order_reference' => $order->order_reference,
-
-                            'payment_id' => $paymentId,
-                        ]
-                    );
-
-                    break;
-
-                default:
-
-                    Log::info(
-                        'Unknown Tabby Webhook Event',
-                        [
-
-                            'event' => $event,
-
-                            'order_reference' => $order->order_reference,
-                        ]
-                    );
-
-                    break;
+                    SendOrderInvoiceJob::dispatch($order->id);
+                }
             }
 
-            $order->save();
+
+
+            elseif (
+                in_array(
+                    $event,
+                    [
+                        'authorize',
+                        'authorized',
+                    ],
+                    true
+                )
+            ) {
+
+                $order->payment_status =
+                    'pending';
+
+                $order->order_status =
+                    'processing';
+
+                $order->save();
+            }
+
+
+           
+
+            elseif (
+                in_array(
+                    $event,
+                    [
+                        'reject',
+                        'rejected',
+                    ],
+                    true
+                )
+            ) {
+
+                $order->payment_status =
+                    'failed';
+
+                $order->order_status =
+                    'failed';
+
+                $order->payment_error =
+                    'Tabby payment rejected.';
+
+                $order->save();
+            }
+
+
+            
+
+            elseif ($event === 'expire') {
+
+                $order->payment_status =
+                    'failed';
+
+                $order->order_status =
+                    'expired';
+
+                $order->payment_error =
+                    'Tabby payment expired.';
+
+                $order->save();
+            }
+
+
+            elseif ($event === 'close') {
+
+                $order->payment_status =
+                    'cancelled';
+
+                $order->order_status =
+                    'cancelled';
+
+                $order->save();
+            }
+
+
+            elseif (
+                in_array(
+                    $event,
+                    [
+                        'refund',
+                        'refunded',
+                    ],
+                    true
+                )
+            ) {
+
+                $order->payment_status =
+                    'refunded';
+
+                $order->order_status =
+                    'refunded';
+
+                $order->save();
+            }
+
+            else {
+
+                $order->save();
+            }
 
             return response()->json([
 
                 'success' => true,
 
-                'message' => 'Webhook processed successfully.',
+                'message' =>
+                    'Webhook processed successfully.',
 
             ], 200);
+
 
         } catch (\Throwable $e) {
 
             Log::error(
                 'Tabby Webhook Error',
                 [
+                    'message' =>
+                        $e->getMessage(),
 
-                    'message' => $e->getMessage(),
+                    'line' =>
+                        $e->getLine(),
 
-                    'file' => $e->getFile(),
+                    'file' =>
+                        $e->getFile(),
 
-                    'line' => $e->getLine(),
+                    'trace' =>
+                        $e->getTraceAsString(),
+
+                    'payload' =>
+                        $request->all(),
                 ]
             );
+
 
             return response()->json([
 
                 'success' => false,
 
-                'message' => 'Webhook processing failed.',
+                'message' =>
+                    'Webhook processing failed.',
 
             ], 500);
         }

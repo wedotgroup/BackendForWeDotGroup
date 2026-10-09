@@ -39,14 +39,11 @@
         @endif
 
         @if ($errors->any())
-            <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-                <p class="mb-1 font-semibold">Please fix the following:</p>
-                <ul class="list-inside list-disc space-y-0.5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+            @foreach ($errors->all() as  $error)
+                <script>
+                    toastr.error("{{ $error }}");
+                </script>
+            @endforeach
         @endif
 
         {{-- ============================================================
@@ -74,7 +71,7 @@
                     </div>
                 </div>
 
-                <form action="" method="POST" class="space-y-5 p-5 sm:p-6">
+                <form action="{{ route("admin.itconsultancy.category.update",$category->id ?? 0) }}" method="POST" class="space-y-5 p-5 sm:p-6">
                     @csrf
 
                     {{-- Name --}}
@@ -82,8 +79,8 @@
                         <label for="catName" class="mb-1.5 block text-sm font-medium text-slate-700">
                             Category Name <span class="text-red-500">*</span>
                         </label>
-                        <input id="catName" name="name" type="text" required
-                            value="{{ old('name') }}"
+                        <input id="catName" name="name" type="text" 
+                            value="{{ old('name',$category->name ?? "") }}"
                             data-slug-source="catSlug"
                             placeholder="e.g. IT Services"
                             class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" />
@@ -97,7 +94,7 @@
                         <label for="catSlug" class="mb-1.5 block text-sm font-medium text-slate-700">
                             Slug
                         </label>
-                        <input id="catSlug" name="slug" type="text" value="{{ old('slug') }}"
+                        <input id="catSlug" name="slug" type="text" value="{{ old('slug',$category->slug ?? "") }}"
                             placeholder="auto-generated-from-name"
                             class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" />
                         <p class="mt-1 text-xs text-slate-400">Leave blank to auto-generate from the name.</p>
@@ -140,7 +137,7 @@
                     </div>
                 </div>
 
-                <form action="" method="POST" class="space-y-5 p-5 sm:p-6">
+                <form action="{{ route("admin.itconsultancy.subcate.store") }}" method="POST" class="space-y-5 p-5 sm:p-6">
                     @csrf
 
                     {{-- Parent category --}}
@@ -148,11 +145,12 @@
                         <label for="subParent" class="mb-1.5 block text-sm font-medium text-slate-700">
                             Category <span class="text-red-500">*</span>
                         </label>
-                        <select id="subParent" name="category_id" required
+                        
+                        <select name="category_id" 
                             class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100">
                             <option value="">— Select a category —</option>
                             @forelse ($categories ?? [] as $category)
-                                <option value="{{ $category->id }}"
+                                <option value="{{ $category->id }}" @selected($subcate->category_id == $category->id)
                                     {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>

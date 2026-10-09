@@ -3,27 +3,53 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryItcnslt;
+use App\Models\SubCategoryItcnslt;
 use Illuminate\Http\Request;
+
+use function Laravel\Prompts\select;
 
 class ItConsultancyController extends Controller
 {
 
     public function index()
+
     {
-        return view('frontend.itconsultancy.category.index');
+        $categories = CategoryItcnslt::with(['subcategory'])->get();
+
+        return view('frontend.itconsultancy.category.index', compact("categories"));
     }
 
     public function create()
     {
-        return view('frontend.itconsultancy.category.create');
+        $categories = CategoryItcnslt::select('id', 'name')->get();
+        return view(
+            'frontend.itconsultancy.category.create',
+            compact('categories')
+        );
     }
 
     public function edit($id)
     {
-        return view('frontend.itconsultancy.category.edit');
+        $category = CategoryItcnslt::findOrFail($id);
+        $subcate = SubCategoryItcnslt::findOrFail($id);
+        $categories = CategoryItcnslt::select('id', 'name')->get();
+
+     
+
+        return view('frontend.itconsultancy.category.edit', compact("category", 'subcate', 'categories'));
     }
 
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            "name" => "required|string|min:3",
+            "slug" => "required|string"
+        ]);
+
+        AddData(CategoryItcnslt::class, $data);
+        return redirect()->route('admin.itconsultancy.category')->with('success', 'Category Created SuccessFul');
+    }
 
     public function update(Request $request, $id) {}
 
@@ -58,21 +84,30 @@ class ItConsultancyController extends Controller
 
 
     // manage subcategory
-    
 
-    public function indexsubcate()
-    {
-        return view("frontend.itconsultancy.category.index");
-    }
+
+
 
     public function storesubcate(Request $request)
     {
-        dd($request->all());
+        $data = $request->validate([
+            "name" => "required|string|min:3",
+            "category_id" => "required|string|exists:category_itcnslts,id",
+            "slug" => "required|string"
+        ]);
+
+        AddData(SubCategoryItcnslt::class, $data);
+        return redirect()->route('admin.itconsultancy.category')->with('success', 'SubCategory Created SuccessFul');
     }
 
     public function editsubcate($id)
     {
-        return view('frontend.itconsultancy.category.edit');
+        $category = CategoryItcnslt::findOrFail($id);
+        $subcate = SubCategoryItcnslt::findOrFail($id);
+        $categories = CategoryItcnslt::select('id', 'name')->get();
+
+     
+        return view('frontend.itconsultancy.category.edit',compact("category", 'subcate', 'categories'));
     }
 
     public function createsubcate()

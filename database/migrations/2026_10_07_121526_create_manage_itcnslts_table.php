@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('manage_itcnslts', function (Blueprint $table) {
             $table->id();
+            $table->string('first_heading')->nullable();
+            $table->longText('small_paragraph')->nullable();
+            $table->string("button1_text")->nullable();
+            $table->string("button2_text")->nullable();
+            $table->string('hero_image')->nullable();
+            $table->string('heading')->nullable();
+            $table->longText("description")->nullable();
+            $table->json('services')->nullable();
+            $table->string('button3_text')->nullable();
+            $table->json("our_services")->nullable();
             $table->timestamps();
         });
     }

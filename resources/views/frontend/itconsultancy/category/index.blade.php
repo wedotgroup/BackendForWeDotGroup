@@ -64,9 +64,9 @@
                     class="w-full rounded-xl border border-slate-300 bg-white pl-9 pr-4 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" />
             </div>
 
-            {{-- <p class="text-xs text-slate-500">
+            <p class="text-xs text-slate-500">
                 Total: <span class="font-semibold text-slate-700">{{ $categories->count() ?? 0 }}</span> categories
-            </p> --}}
+            </p>
         </div>
 
         {{-- ============================================================
@@ -90,7 +90,7 @@
                         @forelse ($categories ?? [] as $index => $category)
                             {{-- ==================== CATEGORY ROW ==================== --}}
                             <tr class="category-row transition hover:bg-indigo-50/40"
-                                data-search="{{ strtolower($category->name . ' ' . $category->slug . ' ' . $category->subcategories->pluck('name')->implode(' ')) }}">
+                                data-search="{{ strtolower($category->name . ' ' . $category->slug . ' ' . $category->subcategory->pluck('name')->implode(' ')) }}">
 
                                 <td class="px-4 py-4 align-top text-slate-500 sm:px-6">
                                     {{ $index + 1 }}
@@ -99,7 +99,7 @@
                                 <td class="px-4 py-4 align-top sm:px-6">
                                     <div class="flex items-start gap-3">
                                         {{-- Expand toggle (only if subcategories exist) --}}
-                                        @if ($category->subcategories->count())
+                                        @if ($category->subcategory->count())
                                             <button type="button" data-toggle-row
                                                 class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-indigo-300 hover:text-indigo-600">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -124,8 +124,8 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
                                                 </svg>
-                                                {{ $category->subcategories->count() }}
-                                                {{ Str::plural('subcategory', $category->subcategories->count()) }}
+                                                {{ $category->subcategory->count() }}
+                                                {{ Str::plural('subcategory', $category->subcategory->count()) }}
                                             </p>
                                         </div>
                                     </div>
@@ -137,19 +137,19 @@
                                 </td>
 
                                 <td class="px-4 py-4 align-top sm:px-6">
-                                    @if ($category->subcategories->count())
+                                    @if ($category->subcategory->count())
                                         <div class="flex flex-wrap gap-1.5">
-                                            @foreach ($category->subcategories->take(3) as $sub)
+                                            @foreach ($category->subcategory->take(3) as $sub)
                                                 <span
                                                     class="inline-flex items-center rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-100">
                                                     {{ $sub->name }}
                                                 </span>
                                             @endforeach
 
-                                            @if ($category->subcategories->count() > 3)
+                                            @if ($category->subcategory->count() > 3)
                                                 <span
                                                     class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
-                                                    +{{ $category->subcategories->count() - 3 }} more
+                                                    +{{ $category->subcategory->count() - 3 }} more
                                                 </span>
                                             @endif
                                         </div>
@@ -160,20 +160,10 @@
 
                                 <td class="px-4 py-4 align-top sm:px-6">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        {{-- Add subcategory --}}
-                                        <a href=""
-                                            title="Add subcategory"
-                                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"
-                                                class="h-4 w-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M12 4.5v15m7.5-7.5h-15" />
-                                            </svg>
-                                        </a>
+                                        
 
                                         {{-- Edit --}}
-                                        <a href="" title="Edit"
+                                        <a href="{{ route('admin.itconsultancy.category.edit',$category->id ?? "") }}" title="Edit"
                                             class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                 viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"
@@ -184,7 +174,7 @@
                                         </a>
 
                                         {{-- Delete --}}
-                                        <form action=""
+                                        <form action="{{ route('admin.itconsultancy.category.destroy',$category->id) }}"
                                             method="POST" class="inline"
                                             onsubmit="return confirm('Delete this category and all its subcategories?');">
                                             @csrf
@@ -204,7 +194,7 @@
                             </tr>
 
                             {{-- ==================== SUBCATEGORY ROWS ==================== --}}
-                            @foreach ($category->subcategories as $subIndex => $sub)
+                            @foreach ($category->subcategory as $subIndex => $sub)
                                 <tr class="subcategory-row hidden bg-slate-50/50 transition hover:bg-violet-50/40"
                                     data-parent-row>
                                     <td class="px-4 py-3 text-slate-400 sm:px-6"></td>
@@ -231,7 +221,7 @@
                                     <td class="px-4 py-3 sm:px-6">
                                         <div class="flex items-center justify-end gap-1.5">
                                             {{-- Edit --}}
-                                            <a href="{{ route('admin.subcategory.edit', $sub->id) }}"
+                                            <a href="{{ route("admin.itconsultancy.subcate.edit",$sub->id) }}"
                                                 title="Edit subcategory"
                                                 class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -243,7 +233,7 @@
                                             </a>
 
                                             {{-- Delete --}}
-                                            <form action="{{ route('admin.subcategory.destroy', $sub->id) }}"
+                                            <form action="{{ route('admin.itconsultancy.subcate.destroy',$sub->id) }}"
                                                 method="POST" class="inline"
                                                 onsubmit="return confirm('Delete this subcategory?');">
                                                 @csrf
